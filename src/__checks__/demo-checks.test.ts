@@ -1,6 +1,30 @@
+// NOT IN USE
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// NOT IN USE
 import * as path from 'path';
 import {
-  BrowserCheck,
+  CheckGroup,
   ApiCheck,
   Dashboard,
   AssertionBuilder,
@@ -10,12 +34,6 @@ import { smsChannel, emailChannel } from '../alert-channels';
 import { demoGroup } from './demo-group.check';
 
 const alertChannels = [smsChannel, emailChannel];
-
-/*
- * In this example, we bundle all basic checks needed to check the Checkly homepage. We explicitly define the Browser
- * check here, instead of using a default based on a .spec.js file. This allows us to override the check configuration.
- * We can also add more checks into one file, in this case to cover a specific API call needed to hydrate the homepage.
- */
 
 
 new MaintenanceWindow('engage-maintenance-window-1', {
@@ -31,38 +49,41 @@ new MaintenanceWindow('engage-maintenance-window-1', {
 })
 
 // Dashboard
+// example: app3-dashboard-1
 new Dashboard('engage-dashboard-1', {
   header: 'Varo Dashboard',
   description: 'Dashboard associated with a basic demo',
+  // 'app3', 'api'
   tags: ['prod', 'browser', 'varo'],
   logo: 'https://www.vecteezy.com/png/9665395-green-money-banknote-cartoon-png-file',
   customUrl: `demo-dashboard`,
 });
 
-// We can define multiple checks in a single *.check.ts file.
-new BrowserCheck('homepage-browser-check', {
-  name: 'Browser - Home page',
+// example: app3-info
+new CheckGroup('demo-check-group-1', {
+  // example: app3 info
+  name: 'Demo Group',
+  activated: true,
+  muted: false,
+  runtimeId: '2023.02',
+  frequency: 60,
+  locations: ['us-east-1', 'eu-west-1'],
+  // example: ['app3-info', 'app3' ]
+  tags: ['mac', 'group', 'demo'],
+  environmentVariables: [],
+  apiCheckDefaults: {},
+  concurrency: 100,
   alertChannels,
-  tags: ['browser'],
-  group: demoGroup,
-  code: {
-    entrypoint: path.join(__dirname, '../tests/homepage.spec.ts'),
-  },
-});
-
-new BrowserCheck('login-browser-check', {
-  name: 'Browser - Login Check',
-  alertChannels,
-  tags: ['browser'],
-  group: demoGroup,
-  code: {
-    entrypoint: path.join(__dirname, '../tests/login.spec.ts'),
-  },
-});
+})
 
 new ApiCheck('homepage-api-check-1', {
+  // example: API - app3 info jsonplaceholder
   name: 'API - Fetch Book List',
+  // should look like app3Group and references a dynamically created group i.e. const app3Group = new GroupCheck
   group: demoGroup,
+  // bring this from json
+  activated: true,
+  // example: ['api', 'app3', 'info, 'jsonplaceholder']
   tags: ['API'],
   degradedResponseTime: 10000,
   maxResponseTime: 20000,
@@ -70,13 +91,13 @@ new ApiCheck('homepage-api-check-1', {
     entrypoint: path.join(__dirname, './utils/setup.ts'),
   },
   request: {
+    // example: "https://jsonplaceholder.typicode.com/posts"
     url: 'https://danube-web.shop/api/books',
     method: 'GET',
     followRedirects: true,
     skipSSL: false,
     assertions: [
       AssertionBuilder.statusCode().equals(200),
-      AssertionBuilder.jsonBody('$[0].id').isNotNull(),
     ],
   },
 });

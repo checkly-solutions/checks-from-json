@@ -1,0 +1,119 @@
+[
+  {
+    "appName": "app1",
+    "info": [
+      {
+        "url": "https://jsonplaceholder.typicode.com/posts",
+        "activated": true,
+        "method": "get"
+      },
+      {
+        "url": "https://jsonplaceholder.typicode.com/comments",
+        "activated": true,
+        "method": "get"
+      }
+    ],
+    "high": [
+      {
+        "url": "https://jsonplaceholder.typicode.com/posts",
+        "activated": true,
+        "method": "get"
+      },
+      {
+        "url": "https://jsonplaceholder.typicode.com/comments",
+        "activated": true,
+        "method": "get"
+      }
+    ],
+    "critical": [
+      {
+        "url": "https://jsonplaceholder.typicode.com/posts",
+        "activated": true,
+        "method": "get"
+      },
+      {
+        "url": "https://jsonplaceholder.typicode.com/comments",
+        "activated": true,
+        "method": "get"
+      }
+    ]
+  },
+  {
+    "appName": "app2",
+    "info": [
+      {
+        "url": "https://jsonplaceholder.typicode.com/posts",
+        "activated": true,
+        "method": "get"
+      },
+      {
+        "url": "https://jsonplaceholder.typicode.com/comments",
+        "activated": true,
+        "method": "get"
+      }
+    ],
+    "high": [
+      {
+        "url": "https://jsonplaceholder.typicode.com/posts",
+        "activated": true,
+        "method": "get"
+      },
+      {
+        "url": "https://jsonplaceholder.typicode.com/comments",
+        "activated": true,
+        "method": "get"
+      }
+    ],
+    "critical": [
+      {
+        "url": "https://jsonplaceholder.typicode.com/posts",
+        "activated": true,
+        "method": "get"
+      },
+      {
+        "url": "https://jsonplaceholder.typicode.com/comments",
+        "activated": true,
+        "method": "get"
+      }
+    ]
+  },
+  {
+    "appName": "app3",
+    "info": [
+      {
+        "url": "https://jsonplaceholder.typicode.com/posts",
+        "activated": true,
+        "method": "get"
+      },
+      {
+        "url": "https://jsonplaceholder.typicode.com/comments",
+        "activated": true,
+        "method": "get"
+      }
+    ],
+    "high": [
+      {
+        "url": "https://jsonplaceholder.typicode.com/posts",
+        "activated": true,
+        "method": "get"
+      },
+      {
+        "url": "https://jsonplaceholder.typicode.com/comments",
+        "activated": true,
+        "method": "get"
+      }
+    ],
+    "critical": [
+      {
+        "url": "https://jsonplaceholder.typicode.com/posts",
+        "activated": true,
+        "method": "get"
+      },
+      {
+        "url": "https://jsonplaceholder.typicode.com/comments",
+        "activated": true,
+        "method": "get"
+      }
+    ]
+  }
+]
