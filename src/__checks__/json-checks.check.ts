@@ -26,7 +26,7 @@ apps.forEach((app: any, index: number) => {
       activated: true,
       muted: false,
       runtimeId: '2023.02',
-      frequency: 60,
+      frequency: 1,
       locations: ['us-east-1', 'eu-west-1'],
       tags: [app.appName, category],
       environmentVariables: [],
