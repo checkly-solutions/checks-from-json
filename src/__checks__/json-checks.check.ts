@@ -14,7 +14,7 @@ apps.forEach((app: any, index: number) => {
   const dashboard = new Dashboard(`${app.appName}-dashboard-${index+1}`, {
     header: `${app.appName} Dashboard`,
     description: 'Dashboard associated with a basic demo',
-    tags: ['prod', 'browser', app.appName],
+    tags: [app.appName],
     logo: 'https://www.vecteezy.com/png/9665395-green-money-banknote-cartoon-png-file',
     customUrl: `${app.appName}-dashboard`,
   });
@@ -39,7 +39,7 @@ apps.forEach((app: any, index: number) => {
     app[category].forEach((check: any, checkIndex: number) => {
       // Create a new API check for each check in the category
       new ApiCheck(`${app.appName}-${category}-api-check-${checkIndex+1}`, {
-        name: `API - Fetch ${app.appName} ${category}`,
+        name: `API - ${app.appName} ${category} ${check.urlShort} `,
         group: group,
         activated: check.activated,
         tags: ['API', app.appName, category],
@@ -50,7 +50,7 @@ apps.forEach((app: any, index: number) => {
         },
         request: {
           url: check.url,
-          method: "GET",
+          method: check.method,
           followRedirects: true,
           skipSSL: false,
           assertions: [

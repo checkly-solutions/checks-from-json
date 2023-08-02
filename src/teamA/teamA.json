@@ -5,36 +5,42 @@
       {
         "url": "https://jsonplaceholder.typicode.com/posts",
         "activated": true,
-        "method": "get"
+        "method": "GET",
+        "urlShort": "jsonplaceholder"
       },
       {
         "url": "https://jsonplaceholder.typicode.com/comments",
         "activated": true,
-        "method": "get"
+        "method": "GET",
+        "urlShort": "jsonplaceholder"
       }
     ],
     "high": [
       {
         "url": "https://jsonplaceholder.typicode.com/posts",
         "activated": true,
-        "method": "get"
+        "method": "GET",
+        "urlShort": "jsonplaceholder"
       },
       {
         "url": "https://jsonplaceholder.typicode.com/comments",
         "activated": true,
-        "method": "get"
+        "method": "GET",
+        "urlShort": "jsonplaceholder"
       }
     ],
     "critical": [
       {
         "url": "https://jsonplaceholder.typicode.com/posts",
         "activated": true,
-        "method": "get"
+        "method": "GET",
+        "urlShort": "jsonplaceholder"
       },
       {
         "url": "https://jsonplaceholder.typicode.com/comments",
         "activated": true,
-        "method": "get"
+        "method": "GET",
+        "urlShort": "jsonplaceholder"
       }
     ]
   },
@@ -44,36 +50,42 @@
       {
         "url": "https://jsonplaceholder.typicode.com/posts",
         "activated": true,
-        "method": "get"
+        "method": "GET",
+        "urlShort": "jsonplaceholder"
       },
       {
         "url": "https://jsonplaceholder.typicode.com/comments",
         "activated": true,
-        "method": "get"
+        "method": "GET",
+        "urlShort": "jsonplaceholder"
       }
     ],
     "high": [
       {
         "url": "https://jsonplaceholder.typicode.com/posts",
         "activated": true,
-        "method": "get"
+        "method": "GET",
+        "urlShort": "jsonplaceholder"
       },
       {
         "url": "https://jsonplaceholder.typicode.com/comments",
         "activated": true,
-        "method": "get"
+        "method": "GET",
+        "urlShort": "jsonplaceholder"
       }
     ],
     "critical": [
       {
         "url": "https://jsonplaceholder.typicode.com/posts",
         "activated": true,
-        "method": "get"
+        "method": "GET",
+        "urlShort": "jsonplaceholder"
       },
       {
         "url": "https://jsonplaceholder.typicode.com/comments",
         "activated": true,
-        "method": "get"
+        "method": "GET",
+        "urlShort": "jsonplaceholder"
       }
     ]
   },
@@ -83,36 +95,42 @@
       {
         "url": "https://jsonplaceholder.typicode.com/posts",
         "activated": true,
-        "method": "get"
+        "method": "GET",
+        "urlShort": "jsonplaceholder"
       },
       {
         "url": "https://jsonplaceholder.typicode.com/comments",
         "activated": true,
-        "method": "get"
+        "method": "GET",
+        "urlShort": "jsonplaceholder"
       }
     ],
     "high": [
       {
         "url": "https://jsonplaceholder.typicode.com/posts",
         "activated": true,
-        "method": "get"
+        "method": "GET",
+        "urlShort": "jsonplaceholder"
       },
       {
         "url": "https://jsonplaceholder.typicode.com/comments",
         "activated": true,
-        "method": "get"
+        "method": "GET",
+        "urlShort": "jsonplaceholder"
       }
     ],
     "critical": [
       {
         "url": "https://jsonplaceholder.typicode.com/posts",
         "activated": true,
-        "method": "get"
+        "method": "GET",
+        "urlShort": "jsonplaceholder"
       },
       {
         "url": "https://jsonplaceholder.typicode.com/comments",
         "activated": true,
-        "method": "get"
+        "method": "GET",
+        "urlShort": "jsonplaceholder"
       }
     ]
   }
