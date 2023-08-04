@@ -1,37 +1,15 @@
-// NOT IN USE
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// NOT IN USE
 import * as path from 'path';
 import {
   CheckGroup,
   ApiCheck,
   Dashboard,
+  BrowserCheck,
   AssertionBuilder,
-  MaintenanceWindow
+  MaintenanceWindow,
+  Frequency
 } from 'checkly/constructs';
 import { smsChannel, emailChannel } from '../alert-channels';
-import { demoGroup } from './demo-group.check';
+import { demoGroup } from './demo-group.test';
 
 const alertChannels = [smsChannel, emailChannel];
 
@@ -49,18 +27,17 @@ new MaintenanceWindow('engage-maintenance-window-1', {
 })
 
 // Dashboard
-// example: app3-dashboard-1
-new Dashboard('engage-dashboard-1', {
-  header: 'Varo Dashboard',
+new Dashboard('trusted-dashboard', {
+  header: 'Trusted Dashboard',
   description: 'Dashboard associated with a basic demo',
   // 'app3', 'api'
-  tags: ['prod', 'browser', 'varo'],
-  logo: 'https://www.vecteezy.com/png/9665395-green-money-banknote-cartoon-png-file',
+  tags: ['prod', 'browser', 'trusted'],
+  logo: 'https://assets-global.website-files.com/6154ac78893abf1d1530f251/615f69a10c2a1134331892ef_trusted-logo.svg',
   customUrl: `demo-dashboard`,
 });
 
 // example: app3-info
-new CheckGroup('demo-check-group-1', {
+new CheckGroup('trusted-check-group-1', {
   // example: app3 info
   name: 'Demo Group',
   activated: true,
@@ -75,6 +52,22 @@ new CheckGroup('demo-check-group-1', {
   concurrency: 100,
   alertChannels,
 })
+
+new BrowserCheck('browser-trusted-get-started', {
+  name: 'Browser - Trusted - Get Started',
+  activated: true,
+  muted: false,
+  doubleCheck: true,
+  shouldFail: false,
+  locations: ['us-east-1', 'us-east-2'],
+  tags: [],
+  frequency: Frequency.EVERY_10M,
+  environmentVariables: [],
+  code: {
+    entrypoint: '../tests/trusted-get-started.spec.ts',
+  },
+})
+
 
 new ApiCheck('homepage-api-check-1', {
   // example: API - app3 info jsonplaceholder
