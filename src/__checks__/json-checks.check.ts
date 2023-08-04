@@ -19,17 +19,19 @@ const apps = JSON.parse(data);
 
 apps.forEach((app: any, index: number) => {
   // Create a new dashboard for each app
+  console.log(app.appName)
   const dashboard = new Dashboard(`${app.appName}-dashboard-${index + 1}`, {
     header: `${app.appName} Dashboard`,
     description: 'Dashboard associated with a basic demo',
-    tags: [app.appName, 'trusted'],
+    tags: [app.appName],
     logo: 'https://www.vecteezy.com/png/9665395-green-money-banknote-cartoon-png-file',
-    customUrl: `${app.appName}-dashboard`,
+    customUrl: `${app.appName.toLowerCase()}-dashboard`,
   });
 
   ['info', 'high', 'critical'].forEach((category) => {
     // Create a new check group for each category in the app
-    const group = new CheckGroup(`${app.appName}-${category}-group`, {
+    if (category.length > 0 ) {
+      const group = new CheckGroup(`${app.appName}-${category}-group`, {
       name: `${app.appName} ${category} Group`,
       activated: true,
       muted: false,
@@ -64,5 +66,6 @@ apps.forEach((app: any, index: number) => {
         },
       });
     });
+    }
   });
 });
