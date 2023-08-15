@@ -8,9 +8,7 @@ Based on my conversation with Alok, it sounded like for a given team or work gro
 This repository was made under the assumption that each team or work group was going to implement monitoring for specific apps under their responsibility. 
 
 
-## Structure
-
-We can look at this repository in as providers (resources) and consumers. 
+## Structure with Notes
 
 - src
   -- __checks__
