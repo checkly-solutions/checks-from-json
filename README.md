@@ -1,11 +1,33 @@
 # Sherwin Sample Project
 
+## Important commands
+
+* npx checkly test 
+triggers a test without recording to the app
+
+* npx checkly test --record
+triggers a test and provides a link after completing
+
+* npx checkly trigger 
+triggers all existing checks in the app
+
+* npx checkly destroy
+destroys any resources associated with the current project
+
 ## Context for Repo
 The idea for this project is create a sample repository that will allow teams to get up and using Checkly easily.
 
 Based on my conversation with Alok, it sounded like for a given team or work group there was a list of URLs that were associated with three tiers of critacality; info, high & critical.
 
-This repository was made under the assumption that each team or work group was going to implement monitoring for specific apps under their responsibility. 
+App
+  - info
+    -- url
+  - high
+    -- url
+  - critical
+    -- url
+
+This repository was made under the assumption that each team or work group was going to implement monitoring for specific apps they're responsible for. 
 
 
 ## Structure with Notes
@@ -38,3 +60,8 @@ This repository was made under the assumption that each team or work group was g
 
   -- checkly.config.ts 
   This is what provides default settings for the checks deployed with this project.
+
+
+## Next steps
+
+The current example should be refactored to call the individual resources into the json-checks.check.ts file, but this is not blocking for the current implementation. 

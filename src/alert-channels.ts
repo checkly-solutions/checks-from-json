@@ -1,8 +1,6 @@
 import { URL } from 'node:url';
 import {
-  SmsAlertChannel,
   EmailAlertChannel,
-  SlackAlertChannel,
   WebhookAlertChannel,
 } from 'checkly/constructs';
 
