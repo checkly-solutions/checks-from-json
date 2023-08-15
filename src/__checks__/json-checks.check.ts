@@ -6,8 +6,8 @@ import {
   ApiCheck,
   AssertionBuilder,
 } from 'checkly/constructs'; // Import the necessary classes from Checkly
-import { smsChannel, emailChannel } from '../alert-channels'; // Import alert channels
-const alertChannels = [smsChannel, emailChannel];
+import { emailChannel, msTeamsWebhookChannel } from '../alert-channels'; // Import alert channels
+const alertChannels = [emailChannel, msTeamsWebhookChannel];
 
 // Read the JSON data from the file
 const data = fs.readFileSync(
