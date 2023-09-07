@@ -2,9 +2,9 @@ import fs from 'fs';
 import path from 'path';
 
 // Import resources
-import {createDashboard} from '../dashboard'
-import {createGroup} from '../group'
-import {createApiCheck} from '../api-check'
+import {createDashboard} from '../createDashboard'
+import {createGroup} from '../createGroup'
+import {createApiCheck} from '../createAPIcheck'
 
 // Read the JSON data from the file
 const data = fs.readFileSync(
