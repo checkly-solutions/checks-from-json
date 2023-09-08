@@ -1,36 +1,37 @@
 [
   {
     "appName": "Sherwin-USA",
-    "browser-checks": [
+    "browser_checks": [
       {
-        "filepath": "/browser-scripts/basic-up.spec.ts",
+        "filePath": "/browser-scripts/basic-up.spec.ts",
         "frequency": 5,
         "activated": true,
         "urlShort": "basic-up"
       },
       {
-        "filepath": "/browser-scripts/login-account.spec.ts",
+        "filePath": "/browser-scripts/login-account.spec.ts",
         "frequency": 5,
         "activated": true,
         "urlShort": "sherwin-login"
       },
       {
-        "filepath": "/browser-scripts/find-store.spec.ts",
+        "filePath": "/browser-scripts/find-store.spec.ts",
         "frequency": 5,
         "activated": true,
         "urlShort": "find-store"
       },
       {
-        "filepath": "/browser-scripts/project-flow.spec.ts",
+        "filePath": "/browser-scripts/project-flow.spec.ts",
         "frequency": 5,
         "activated": true,
         "urlShort": "project-flow"
       }
-    ]
+    ],
+    "api_checks": []
   },
   {
     "appName": "Flywheel",
-    "browser-checks": [],
+    "browser_checks": [],
     "api_checks": [
       {
         "url": "https://www.mlcampbell.com/",
@@ -90,7 +91,7 @@
   },
   {
     "appName": "Southern-Cone-Sites",
-    "browser-checks": [],
+    "browser_checks": [],
     "api_checks": [
       {
         "url": "https://www.sherwin.com.ar",
@@ -150,7 +151,7 @@
   },
   {
     "appName": "TAG-Russia",
-    "browser-checks": [],
+    "browser_checks": [],
     "api_checks": [
       {
         "url": "https://www.sherwin.ru",
@@ -174,7 +175,7 @@
   },
   {
     "appName": "TAG-SW-Paintshield",
-    "browser-checks": [],
+    "browser_checks": [],
     "api_checks": [
       {
         "url": "https://www.swpaintshield.com/",
@@ -189,7 +190,7 @@
   },
   {
     "appName": "PCG",
-    "browser-checks": [],
+    "browser_checks": [],
     "api_checks": [
       {
         "url": "https://www.sherwin-williams.com/content/colorsnap",
@@ -213,7 +214,7 @@
   },
   {
     "appName": "CBG",
-    "browser-checks": [],
+    "browser_checks": [],
     "api_checks": [
       {
         "url": "https://www.martinsenour.com/",
@@ -228,7 +229,7 @@
   },
   {
     "appName": "Legacy-Valspar",
-    "browser-checks": [],
+    "browser_checks": [],
     "api_checks": [
       {
         "url": "https://www.mccloskey.com",

@@ -7,7 +7,7 @@ export function createApiCheck(appName: string, category: string, check: any, gr
     // checks have an activated true or false value
     activated: check.activated,
     // apps have an appName attribute and have URL categories, we're passing these as tags for searchability
-    tags: ['API', appName, category],
+    tags: ['API', appName],
     degradedResponseTime: 5000,
     maxResponseTime: 10000,
     request: {

@@ -1,4 +1,3 @@
-import { URL } from 'node:url';
 import {
   EmailAlertChannel,
   WebhookAlertChannel,
@@ -12,12 +11,12 @@ const sendDefaults = {
   sslExpiryThreshold: 30,
 };
 
-export const emailChannel = new EmailAlertChannel('email-181540', {
+export const emailChannel = new EmailAlertChannel('email-test', {
   address: 'venkata.s.matta@sherwin.com',
   ...sendDefaults,
 });
 
-export const msTeamsWebhookChannel = new WebhookAlertChannel('webhook-181573', {
+export const msTeamsWebhookChannel = new WebhookAlertChannel('webhook-test', {
   name: 'MSTeams Integration',
   method: 'POST',
   url: new URL(
