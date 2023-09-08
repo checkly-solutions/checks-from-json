@@ -35,14 +35,26 @@ apps.forEach((app: any, index: number) => {
       app[category].length >= 1 &&
       category === 'browser_checks'
     ) {
-      // Create Browser Check
-      createBrowserCheck(app, group, category);
+      // createBrowserCheck(app, group, category)
+
+      app[category].forEach((check) => {
+        const filePath = check.filePath.length > 0 ? check.filePath : undefined;
+
+        new BrowserCheck(`${check.urlShort}-${app.appName}-browser`, {
+          name: `${check.urlShort} ${app.appName} ${category}`,
+          frequency: check.frequency,
+          group,
+          tags: ['browser', app.appName],
+          code: {
+            entrypoint: path.join(`../${filePath}`),
+          },
+        });
+      })
     } else if (
       app[category] &&
       app[category].length >= 1 &&
       category === 'api_checks'
     ) {
-      // Create API Check
       createApiCheck(app, group, category, index);
     }
   });
