@@ -10,6 +10,7 @@ import {
 } from 'checkly/constructs'; // Import the necessary classes from Checkly
 import { emailChannel, msTeamsWebhookChannel } from '../alert-channels'; // Import alert channels
 
+import { createDashboard } from '../createDashboard';
 const alertChannels = [emailChannel, msTeamsWebhookChannel];
 
 // Read the JSON data from the file
@@ -23,14 +24,15 @@ const apps = JSON.parse(data);
 apps.forEach((app: any, index: number) => {
   console.log(app.appName);
   // Create a new dashboard for each app
-  new Dashboard(`${app.appName.toLowerCase()}-dashboard-${index + 1}`, {
-    header: `${app.appName} CLI Dashboard`,
-    description: 'Dashboard associated with a basic demo',
-    tags: [app.appName, 'cli'],
-    useTagsAndOperator: false,
-    logo: 'https://mma.prnewswire.com/media/875497/Maritz_logo.jpg?p=facebook',
-    customUrl: `${app.appName.toLowerCase()}-dashboard-${index + 1}`,
-  });
+  createDashboard(app.appName, index);
+  // new Dashboard(`${app.appName.toLowerCase()}-dashboard-${index + 1}`, {
+  //   header: `${app.appName} CLI Dashboard`,
+  //   description: 'Dashboard associated with a basic demo',
+  //   tags: [app.appName, 'cli'],
+  //   useTagsAndOperator: false,
+  //   logo: 'https://mma.prnewswire.com/media/875497/Maritz_logo.jpg?p=facebook',
+  //   customUrl: `${app.appName.toLowerCase()}-dashboard-${index + 1}`,
+  // });
 
   const group = new CheckGroup(`${app.appName}-group-${index + 200}`, {
     name: `${app.appName} Group`,
