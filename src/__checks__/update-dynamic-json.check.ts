@@ -21,19 +21,16 @@ const data = fs.readFileSync(
 const apps = JSON.parse(data);
 
 apps.forEach((app: any, index: number) => {
-  console.log(app.appName)
+  console.log(app.appName);
   // Create a new dashboard for each app
-  const dashboard = new Dashboard(
-    `${app.appName.toLowerCase()}-dashboard-${index + 1}`,
-    {
-      header: `${app.appName} CLI Dashboard`,
-      description: 'Dashboard associated with a basic demo',
-      tags: [app.appName, 'cli'],
-      useTagsAndOperator: false,
-      logo: 'https://mma.prnewswire.com/media/875497/Maritz_logo.jpg?p=facebook',
-      customUrl: `${app.appName.toLowerCase()}-dashboard-${index + 1}`,
-    }
-  );
+  new Dashboard(`${app.appName.toLowerCase()}-dashboard-${index + 1}`, {
+    header: `${app.appName} CLI Dashboard`,
+    description: 'Dashboard associated with a basic demo',
+    tags: [app.appName, 'cli'],
+    useTagsAndOperator: false,
+    logo: 'https://mma.prnewswire.com/media/875497/Maritz_logo.jpg?p=facebook',
+    customUrl: `${app.appName.toLowerCase()}-dashboard-${index + 1}`,
+  });
 
   const group = new CheckGroup(`${app.appName}-group-${index + 200}`, {
     name: `${app.appName} Group`,
