@@ -33,12 +33,12 @@ export function createApiCheck(
         })
       : undefined;
 
-    new ApiCheck(`${app.appName}-${check.urlShort}-cli-${index + 1}`, {
+    new ApiCheck(`${app.appName}-${check.urlShort}-API-${index + 1}`, {
       name: `${check.urlShort} ${category} ${app.appName}`,
       group: group,
       activated: check.activated,
       frequency: check.frequency,
-      tags: ['API', app.appName, category],
+      tags: ['API', app.appName, category, "cli"],
       degradedResponseTime: 10000,
       maxResponseTime: 20000,
       request: {
