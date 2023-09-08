@@ -11,12 +11,12 @@ const sendDefaults = {
   sslExpiryThreshold: 30,
 };
 
-export const emailChannel = new EmailAlertChannel('email-test', {
+export const emailChannel = new EmailAlertChannel('email-181540', {
   address: 'venkata.s.matta@sherwin.com',
   ...sendDefaults,
 });
 
-export const msTeamsWebhookChannel = new WebhookAlertChannel('webhook-test', {
+export const msTeamsWebhookChannel = new WebhookAlertChannel('webhook-181573', {
   name: 'MSTeams Integration',
   method: 'POST',
   url: new URL(

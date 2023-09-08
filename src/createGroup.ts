@@ -6,7 +6,7 @@ export function createGroup(appName: string) {
   return new CheckGroup(`${appName}-group`, {
     name: `${appName} Group`,
     activated: true,
-    muted: false,
+    muted: true,
     runtimeId: '2023.02',
     frequency: 1,
     locations: ['us-east-1', 'us-west-2'],
