@@ -12,6 +12,7 @@ import {
 import { createDashboard } from '../createDashboard';
 import { createGroup } from '../createGroup';
 import { createApiCheck } from '../createAPIcheck';
+import { createBrowserCheck } from '../createBrowserCheck';
 
 // Read the JSON data from the file
 const data = fs.readFileSync(
@@ -34,25 +35,14 @@ apps.forEach((app: any, index: number) => {
       app[category].length >= 1 &&
       category === 'browser_checks'
     ) {
-      app[category].forEach((check) => {
-        const filePath = check.filePath.length > 0 ? check.filePath : undefined;
-
-        new BrowserCheck(`${check.urlShort}-${app.appName}-browser`, {
-          name: `${check.urlShort} ${app.appName} ${category}`,
-          frequency: check.frequency,
-          group,
-          tags: ['browser', app.appName],
-          code: {
-            entrypoint: path.join(`../${filePath}`),
-          },
-        });
-      });
+      // Create Browser Check
+      createBrowserCheck(app, group, category);
     } else if (
       app[category] &&
       app[category].length >= 1 &&
       category === 'api_checks'
     ) {
-      // create API check 
+      // Create API Check
       createApiCheck(app, group, category, index);
     }
   });

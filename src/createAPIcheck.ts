@@ -1,8 +1,13 @@
 import path from 'path';
 import { ApiCheck, AssertionBuilder } from 'checkly/constructs';
 
-// Function to handle API checks
-export function createApiCheck(app: any, group: any, category: string, index: number) {
+// Function to create API checks
+export function createApiCheck(
+  app: any,
+  group: any,
+  category: string,
+  index: number
+) {
   app[category].forEach((check: any) => {
     const setupScript =
       check.setup.length > 0
@@ -28,7 +33,7 @@ export function createApiCheck(app: any, group: any, category: string, index: nu
         })
       : undefined;
 
-    new ApiCheck(`${app.appName}-${check.urlShort}-cli-${index+1}`, {
+    new ApiCheck(`${app.appName}-${check.urlShort}-cli-${index + 1}`, {
       name: `${check.urlShort} ${category} ${app.appName}`,
       group: group,
       activated: check.activated,
