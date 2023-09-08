@@ -8,9 +8,10 @@ import {
   ApiCheck,
   AssertionBuilder,
 } from 'checkly/constructs'; // Import the necessary classes from Checkly
-import { emailChannel, msTeamsWebhookChannel } from '../alert-channels'; // Import alert channels
 
 import { createDashboard } from '../createDashboard';
+import { createGroup } from '../createGroup';
+import { emailChannel, msTeamsWebhookChannel } from '../alert-channels'; // Import alert channels
 const alertChannels = [emailChannel, msTeamsWebhookChannel];
 
 // Read the JSON data from the file
@@ -22,31 +23,11 @@ const data = fs.readFileSync(
 const apps = JSON.parse(data);
 
 apps.forEach((app: any, index: number) => {
-  console.log(app.appName);
-  // Create a new dashboard for each app
+  // Create dashboard that uses the appName as a tag for reference
   createDashboard(app.appName, index);
-  // new Dashboard(`${app.appName.toLowerCase()}-dashboard-${index + 1}`, {
-  //   header: `${app.appName} CLI Dashboard`,
-  //   description: 'Dashboard associated with a basic demo',
-  //   tags: [app.appName, 'cli'],
-  //   useTagsAndOperator: false,
-  //   logo: 'https://mma.prnewswire.com/media/875497/Maritz_logo.jpg?p=facebook',
-  //   customUrl: `${app.appName.toLowerCase()}-dashboard-${index + 1}`,
-  // });
-
-  const group = new CheckGroup(`${app.appName}-group-${index + 200}`, {
-    name: `${app.appName} Group`,
-    activated: true,
-    muted: false,
-    runtimeId: '2023.02',
-    frequency: 1,
-    locations: ['us-east-1', 'us-west-2'],
-    tags: [app.appName, 'cli'],
-    environmentVariables: [],
-    apiCheckDefaults: {},
-    concurrency: 100,
-    alertChannels,
-  });
+  // Create group that will be referenced within a given check
+  let group = {};
+  group = createGroup(app.appName);
 
   ['browser_checks', 'api_checks'].forEach((category) => {
     if (
