@@ -5,7 +5,7 @@ import { defineConfig } from 'checkly'
  */
 const config = defineConfig({
   /* A human friendly name for your project */
-  projectName: 'S Example Project',
+  projectName: 'JSON Resources',
   /** A logical ID that needs to be unique across your Checkly account,
    * See https://www.checklyhq.com/docs/cli/constructs/ to learn more about logical IDs.
    */

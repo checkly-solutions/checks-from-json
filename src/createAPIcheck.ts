@@ -9,6 +9,9 @@ export function createApiCheck(
   index: number
 ) {
   app[category].forEach((check: any) => {
+
+    const appName = app.appName.split(' ').join('-').toLowerCase()
+
     const setupScript =
       check.setup.length > 0
         ? { entrypoint: path.join(__dirname, check.setup) }
@@ -33,12 +36,12 @@ export function createApiCheck(
         })
       : undefined;
 
-    new ApiCheck(`${app.appName}-${check.urlShort}-API-${index + 1}`, {
-      name: `${check.urlShort} ${category} ${app.appName}`,
+    new ApiCheck(`${check.urlShort}-${appName}-API-${index + 1}`, {
+      name: `${check.urlShort} ${appName} ${category}`,
       group: group,
       activated: check.activated,
       frequency: check.frequency,
-      tags: ['API', app.appName, category, "cli"],
+      tags: ['API', appName, category, "cli"],
       degradedResponseTime: 10000,
       maxResponseTime: 20000,
       request: {

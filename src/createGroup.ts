@@ -1,16 +1,18 @@
 import { CheckGroup } from "checkly/constructs";
-import { emailChannel, msTeamsWebhookChannel } from './alert-channels'; // Import alert channels
-const alertChannels = [emailChannel, msTeamsWebhookChannel];
+import { emailChannel, googleWebHook } from './alert-channels'; // Import alert channels
+const alertChannels = [emailChannel, googleWebHook];
 
 export function createGroup(appName: string) {
-  return new CheckGroup(`${appName}-group`, {
-    name: `${appName} Group`,
+  const formattedAppName = appName.split(' ').join('-').toLowerCase()
+
+  return new CheckGroup(`${formattedAppName}-group`, {
+    name: `${formattedAppName} Group`,
     activated: true,
     muted: true,
     runtimeId: '2023.02',
     frequency: 1,
     locations: ['us-east-1', 'us-west-2'],
-    tags: [appName, 'cli'],
+    tags: [formattedAppName, 'cli'],
     environmentVariables: [],
     apiCheckDefaults: {},
     concurrency: 100,

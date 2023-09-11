@@ -1,253 +1,57 @@
 [
   {
-    "appName": "Sherwin-USA",
+    "appName": "Next Danube",
     "browser_checks": [
       {
-        "filePath": "/browser-scripts/basic-up.spec.ts",
+        "filePath": "/browser-scripts/login.spec.ts",
         "frequency": 5,
         "activated": true,
-        "urlShort": "basic-up"
+        "urlShort": "login"
       },
       {
-        "filePath": "/browser-scripts/login-account.spec.ts",
+        "filePath": "/browser-scripts/visit.spec.ts",
         "frequency": 5,
         "activated": true,
-        "urlShort": "sherwin-login"
-      },
-      {
-        "filePath": "/browser-scripts/find-store.spec.ts",
-        "frequency": 5,
-        "activated": true,
-        "urlShort": "find-store"
-      },
-      {
-        "filePath": "/browser-scripts/project-flow.spec.ts",
-        "frequency": 5,
-        "activated": true,
-        "urlShort": "project-flow"
+        "urlShort": "visit"
       }
     ],
-    "api_checks": []
-  },
-  {
-    "appName": "Flywheel",
-    "browser_checks": [],
     "api_checks": [
       {
-        "url": "https://www.mlcampbell.com/",
+        "url": "https://next-danube-webshop.vercel.app/",
         "activated": true,
         "method": "GET",
         "frequency": 5,
         "setup": "",
         "assertions": [["statusCode().equals(200)"]],
-        "urlShort": "mlcampbell"
-      },
-      {
-        "url": "https://www.sayerlack.com/",
-        "activated": true,
-        "method": "GET",
-        "frequency": 5,
-        "setup": "",
-        "assertions": [["statusCode().equals(200)"]],
-        "urlShort": "sayerlack"
-      },
-      {
-        "url": "https://www.sherwin-williams.com.ec/",
-        "activated": true,
-        "method": "GET",
-        "frequency": 5,
-        "setup": "",
-        "assertions": [["statusCode().equals(200)"]],
-        "urlShort": "sherwin-williams-ec"
-      },
-      {
-        "url": "https://www.swremodeler.com/",
-        "activated": true,
-        "method": "GET",
-        "frequency": 5,
-        "setup": "",
-        "assertions": [["statusCode().equals(200)"]],
-        "urlShort": "swremodeler"
-      },
-      {
-        "url": "https://www.americaneedspainters.com/",
-        "activated": true,
-        "method": "GET",
-        "frequency": 5,
-        "setup": "",
-        "assertions": [["statusCode().equals(200)"]],
-        "urlShort": "americaneedspainters"
-      },
-      {
-        "url": "https://www.swstyleguide.com/",
-        "activated": true,
-        "method": "GET",
-        "frequency": 5,
-        "setup": "",
-        "assertions": [["statusCode().equals(200)"]],
-        "urlShort": "swstyleguide"
+        "urlShort": "basic-up"
       }
     ]
   },
   {
-    "appName": "Southern-Cone-Sites",
-    "browser_checks": [],
-    "api_checks": [
+    "appName": "Old Danube",
+    "browser_checks": [
       {
-        "url": "https://www.sherwin.com.ar",
-        "activated": true,
-        "method": "GET",
+        "filePath": "/browser-scripts/login.spec.ts",
         "frequency": 5,
-        "setup": "",
-        "assertions": [["statusCode().equals(200)"]],
-        "urlShort": "sherwin-ar"
+        "activated": true,
+        "urlShort": "login"
       },
       {
-        "url": "https://www.sherwin.cl",
-        "activated": true,
-        "method": "GET",
+        "filePath": "/browser-scripts/visit.spec.ts",
         "frequency": 5,
-        "setup": "",
-        "assertions": [["statusCode().equals(200)"]],
-        "urlShort": "sherwin-cl"
-      },
-      {
-        "url": "https://www.sherwin.com.uy",
         "activated": true,
-        "method": "GET",
-        "frequency": 5,
-        "setup": "",
-        "assertions": [["statusCode().equals(200)"]],
-        "urlShort": "sherwin-uy"
-      },
-      {
-        "url": "https://www.sherwin.com.br",
-        "activated": true,
-        "method": "GET",
-        "frequency": 5,
-        "setup": "",
-        "assertions": [["statusCode().equals(200)"]],
-        "urlShort": "sherwin-br"
-      },
-      {
-        "url": "https://www.sherwin.com.mx",
-        "activated": true,
-        "method": "GET",
-        "frequency": 5,
-        "setup": "",
-        "assertions": [["statusCode().equals(200)"]],
-        "urlShort": "sherwin-mx"
-      },
-      {
-        "url": "https://www.lusol.com.uy",
-        "activated": true,
-        "method": "GET",
-        "frequency": 5,
-        "setup": "",
-        "assertions": [["statusCode().equals(200)"]],
-        "urlShort": "lusol-uy"
+        "urlShort": "visit"
       }
-    ]
-  },
-  {
-    "appName": "TAG-Russia",
-    "browser_checks": [],
+    ],
     "api_checks": [
       {
-        "url": "https://www.sherwin.ru",
+        "url": "https://next-danube-webshop.vercel.app/",
         "activated": true,
         "method": "GET",
         "frequency": 5,
         "setup": "",
         "assertions": [["statusCode().equals(200)"]],
-        "urlShort": "sherwin-ru"
-      },
-      {
-        "url": "https://www.sherwin-williams.ru",
-        "activated": true,
-        "method": "GET",
-        "frequency": 5,
-        "setup": "",
-        "assertions": [["statusCode().equals(200)"]],
-        "urlShort": "sherwin-williams-ru"
-      }
-    ]
-  },
-  {
-    "appName": "TAG-SW-Paintshield",
-    "browser_checks": [],
-    "api_checks": [
-      {
-        "url": "https://www.swpaintshield.com/",
-        "activated": true,
-        "method": "GET",
-        "frequency": 5,
-        "setup": "",
-        "assertions": [["statusCode().equals(200)"]],
-        "urlShort": "swpaintshield"
-      }
-    ]
-  },
-  {
-    "appName": "PCG",
-    "browser_checks": [],
-    "api_checks": [
-      {
-        "url": "https://www.sherwin-williams.com/content/colorsnap",
-        "activated": true,
-        "method": "GET",
-        "frequency": 5,
-        "setup": "",
-        "assertions": [["statusCode().equals(200)"]],
-        "urlShort": "colorsnap"
-      },
-      {
-        "url": "https://www.swcolorsnap.com/",
-        "activated": true,
-        "method": "GET",
-        "frequency": 5,
-        "setup": "",
-        "assertions": [["statusCode().equals(200)"]],
-        "urlShort": "swcolorsnap"
-      }
-    ]
-  },
-  {
-    "appName": "CBG",
-    "browser_checks": [],
-    "api_checks": [
-      {
-        "url": "https://www.martinsenour.com/",
-        "activated": true,
-        "method": "GET",
-        "frequency": 5,
-        "setup": "",
-        "assertions": [["statusCode().equals(200)"]],
-        "urlShort": "martinsenour"
-      }
-    ]
-  },
-  {
-    "appName": "Legacy-Valspar",
-    "browser_checks": [],
-    "api_checks": [
-      {
-        "url": "https://www.mccloskey.com",
-        "activated": true,
-        "method": "GET",
-        "frequency": 5,
-        "setup": "",
-        "assertions": [["statusCode().equals(200)"]],
-        "urlShort": "mccloskey"
-      },
-      {
-        "url": "https://www.paintestimating.com",
-        "activated": true,
-        "method": "GET",
-        "frequency": 5,
-        "setup": "",
-        "assertions": [["statusCode().equals(200)"]],
-        "urlShort": "paintestimating"
+        "urlShort": "basic-up"
       }
     ]
   }
