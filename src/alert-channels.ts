@@ -1,48 +1,72 @@
-import { URL } from 'node:url'
 import {
-  SmsAlertChannel,
   EmailAlertChannel,
-  SlackAlertChannel,
-  WebhookAlertChannel
-} from 'checkly/constructs'
+  WebhookAlertChannel,
+} from 'checkly/constructs';
 
 const sendDefaults = {
   sendFailure: true,
   sendRecovery: true,
   sendDegraded: false,
   sslExpiry: true,
-  sslExpiryThreshold: 30
-}
+  sslExpiryThreshold: 30,
+};
 
-export const smsChannel = new SmsAlertChannel('sms-channel-1', {
-  phoneNumber: '0031061234567890',
-  ...sendDefaults
-})
+export const emailChannel = new EmailAlertChannel('email-181540', {
+  address: 'venkata.s.matta@sherwin.com',
+  ...sendDefaults,
+});
 
-export const emailChannel = new EmailAlertChannel('email-channel-1', {
-  address: 'alerts@acme.com',
-  ...sendDefaults
-})
-
-export const slackChannel = new SlackAlertChannel('slack-channel-1', {
-  url: new URL('https://hooks.slack.com/services/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'),
-  channel: '#ops',
-  ...sendDefaults
-})
-
-export const webhookChannel = new WebhookAlertChannel('webhook-channel-1', {
-  name: 'Pushover webhook',
+export const msTeamsWebhookChannel = new WebhookAlertChannel('webhook-181573', {
+  name: 'MSTeams Integration',
   method: 'POST',
-  url: new URL('https://webhook.site/ddead495-8b15-4b0d-a25d-f6cda4144dc7'),
+  url: new URL(
+    'https://swcompany.webhook.office.com/webhookb2/094e8920-b8d3-49ee-a7d4-8576b636ecbb@44b79a67-d972-49ba-9167-8eb05f754a1a/IncomingWebhook/620a617c2e964c7e98fac9d47c8f89ff/71493bd4-0176-499c-bc34-1064b9e3e72e'
+  ),
+  sendRecovery: true,
+  sendFailure: true,
+  sendDegraded: true,
+  sslExpiry: true,
   template: `{
-    "token":"FILL_IN_YOUR_SECRET_TOKEN_FROM_PUSHOVER",
-    "user":"FILL_IN_YOUR_USER_FROM_PUSHOVER",
-    "title":"{{ALERT_TITLE}}",
-    "html":1,
-    "priority":2,
-    "retry":30,
-    "expire":10800,
-    "message":"{{ALERT_TYPE}} {{STARTED_AT}} ({{RESPONSE_TIME}}ms) {{RESULT_LINK}}"
-  }`,
-  ...sendDefaults
-})
+  "@type": "MessageCard",
+  "@context": "http://schema.org/extensions",
+  "summary": "{{ALERT_TITLE}}",
+  "title": "{{ALERT_TITLE}}",
+  {{! Embeds for the SSL expiry notifications}}
+  {{#eq ALERT_TYPE "ALERT_SSL" }}
+  {{else}}
+  "sections": [{
+    "facts": [{
+      "name": "Response time",
+      "value": "{{RESPONSE_TIME}}ms"
+    }, {
+      "name": "Location",
+      "value": "{{RUN_LOCATION}}"
+    }, {
+      "name": "Timestamp",
+      "value": "{{STARTED_AT}}"
+    },
+    {{#if GROUP_NAME}}
+    {
+      "name": "Group",
+      "value": "{{GROUP_NAME}}"
+    },
+    {{/if}}
+    {
+      "name": "Tags",
+      "value": "{{#each TAGS}} {{this}} {{#unless @last}},{{/unless}} {{/each}}"
+    }],
+    "markdown": true
+  }],
+  {{/eq}}
+  "potentialAction": [
+    {
+      "@type": "OpenUri",
+      "name": "View in Checkly",
+      "targets": [
+        { "os": "default", "uri": "{{RESULT_LINK}}" }
+      ]
+    }
+  ]
+}
+`,
+});
