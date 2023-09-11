@@ -6,7 +6,7 @@ export function createDashboard(appName: string, index: number) {
     description: 'Dashboard associated with a basic demo',
     tags: [appName, 'cli'],
     useTagsAndOperator: false,
-    logo: 'https://mma.prnewswire.com/media/875497/Maritz_logo.jpg?p=facebook',
+    logo: 'https://www.moviemaker.com/wp-content/uploads/2022/05/Could-Any-Other-Actor-Play-Himself-as-Well-as-Nicolas-Cage-Plays-Nicolas-Cage-675x444.jpg',
     customUrl: `${appName.toLowerCase()}-dashboard-${index + 1}`,
   });
 }
