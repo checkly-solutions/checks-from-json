@@ -1,4 +1,4 @@
-# Sherwin Sample Project
+# Sample Project
 
 ## Important commands
 
@@ -10,6 +10,9 @@ triggers a test and provides a link after completing
 
 * npx checkly trigger 
 triggers all existing checks in the app
+
+* npx checkly deploy
+deploys all resources tied to the current project
 
 * npx checkly destroy
 destroys any resources associated with the current project
