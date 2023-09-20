@@ -17,15 +17,22 @@ export function createApiCheck(
         ? { entrypoint: path.join(__dirname, check.setup) }
         : undefined;
 
-    const assertions = check.assertions.map(([assertionCode]: any) => {
-      let assertion = AssertionBuilder;
-      assertionCode.split('.').forEach((part: string) => {
-        const [methodName, args] = part.match(/(\w+)\((.*)\)/)?.slice(1) ?? [
-          part,
-          '',
-        ];
-        assertion = (assertion as any)[methodName]?.(args) ?? assertion;
-      });
+        const assertions = check.assertions.map(([assertionCode]: any) => {
+          let assertion = AssertionBuilder;
+          // Use regex to separate methods from arguments.
+          const matches = assertionCode.match(/([a-zA-Z0-9_$]+)\(([^)]*)\)/g);
+          
+          if (matches) {
+            matches.forEach((part: string) => {
+              // Extract methodName and args.
+              const [_, methodName, args] = part.match(/([a-zA-Z0-9_$]+)\(([^)]*)\)/) || [];
+              assertion = (assertion as any)[methodName]?.(args) ?? assertion;
+            });
+          } else {
+            // If no parenthetical arguments, treat as a single method.
+            assertion = (assertion as any)[assertionCode] ?? assertion;
+          }
+          
       return assertion;
     });
 

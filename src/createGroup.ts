@@ -6,7 +6,7 @@ export function createGroup(appName: string) {
   const formattedAppName = appName.split(' ').join('-').toLowerCase()
 
   return new CheckGroup(`${formattedAppName}-group`, {
-    name: `${formattedAppName} Group`,
+    name: `${formattedAppName}`,
     activated: true,
     muted: true,
     runtimeId: '2023.02',
