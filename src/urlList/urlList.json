@@ -1,6 +1,6 @@
 [
   {
-    "appName": "Next Danube",
+    "appName": "Knowledge",
     "browser_checks": [
       {
         "filePath": "/browser-scripts/login.spec.ts",
@@ -36,17 +36,18 @@
       },
       {
         "url": "https://next-danube-webshop-backend.vercel.app/api/v1/users",
-        "activated": true,
+        "activated": false,
         "method": "GET",
         "frequency": 5,
         "setup": "",
         "assertions": [["statusCode().equals(200)"]],
+        "headers": ["application/type","application/json"],
         "urlShort": "users"
       }
     ]
   },
   {
-    "appName": "Old Danube",
+    "appName": "Answers",
     "browser_checks": [
       {
         "filePath": "/browser-scripts/login.spec.ts",
@@ -75,5 +76,98 @@
         "urlShort": "get-books"
       }
     ]
+  },
+  {
+    "appName": "Platform",
+    "browser_checks": [
+      {
+        "filePath": "/browser-scripts/login.spec.ts",
+        "frequency": 30,
+        "activated": true,
+        "urlShort": "login"
+      },
+      {
+        "filePath": "/browser-scripts/visit.spec.ts",
+        "frequency": 30,
+        "activated": true,
+        "urlShort": "visit"
+      }
+    ],
+    "api_checks": [
+      {
+        "url": "https://next-danube-webshop.vercel.app/",
+        "activated": true,
+        "method": "GET",
+        "frequency": 5,
+        "setup": "",
+        "assertions": [["statusCode().equals(200)"]],
+        "urlShort": "basic-up"
+      },
+      {
+        "url": "https://next-danube-webshop-backend.vercel.app//api/v1/books",
+        "activated": true,
+        "method": "GET",
+        "frequency": 5,
+        "setup": "",
+        "assertions": [["statusCode().equals(200)"]],
+        "urlShort": "books"
+      },
+      {
+        "url": "https://next-danube-webshop-backend.vercel.app/api/v1/users",
+        "activated": false,
+        "method": "GET",
+        "frequency": 5,
+        "setup": "",
+        "assertions": [["statusCode().equals(200)"]],
+        "urlShort": "users"
+      }
+    ]
+  },
+  {
+    "appName": "SRE",
+    "browser_checks": [
+      {
+        "filePath": "/browser-scripts/login.spec.ts",
+        "frequency": 30,
+        "activated": true,
+        "urlShort": "login"
+      },
+      {
+        "filePath": "/browser-scripts/visit.spec.ts",
+        "frequency": 30,
+        "activated": true,
+        "urlShort": "visit"
+      }
+    ],
+    "api_checks": [
+      {
+        "url": "https://next-danube-webshop.vercel.app/",
+        "activated": true,
+        "method": "GET",
+        "frequency": 5,
+        "setup": "",
+        "assertions": [["statusCode().equals(200)"]],
+        "urlShort": "basic-up"
+      },
+      {
+        "url": "https://next-danube-webshop-backend.vercel.app//api/v1/books",
+        "activated": true,
+        "method": "GET",
+        "frequency": 5,
+        "setup": "",
+        "assertions": [["statusCode().equals(200)"]],
+        "urlShort": "books"
+      },
+      {
+        "url": "https://next-danube-webshop-backend.vercel.app/api/v1/users",
+        "activated": false,
+        "method": "GET",
+        "frequency": 5,
+        "setup": "",
+        "assertions": [["statusCode().equals(200)"]],
+        "urlShort": "users"
+      }
+    ]
   }
+
 ]
