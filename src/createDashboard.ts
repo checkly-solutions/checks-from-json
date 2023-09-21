@@ -10,7 +10,7 @@ export function createDashboard(appName: string, index: number) {
     useTagsAndOperator: false,
     isPrivate: true,
     enableIncidents: true,
-    logo: 'https://www.moviemaker.com/wp-content/uploads/2022/05/Could-Any-Other-Actor-Play-Himself-as-Well-as-Nicolas-Cage-Plays-Nicolas-Cage-675x444.jpg',
+    logo: 'https://upload.wikimedia.org/wikipedia/commons/c/c5/Squarespace_Logo.png',
     customUrl: `${formattedAppName}-dashboard-${index + 1}`,
   });
 }
