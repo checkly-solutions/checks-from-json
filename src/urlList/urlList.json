@@ -1,6 +1,6 @@
 [
   {
-    "appName": "Knowledge",
+    "appName": "QA-1",
     "browser_checks": [
       {
         "filePath": "/browser-scripts/login.spec.ts",
@@ -47,7 +47,7 @@
     ]
   },
   {
-    "appName": "Answers",
+    "appName": "QA-2",
     "browser_checks": [
       {
         "filePath": "/browser-scripts/login.spec.ts",
@@ -78,7 +78,7 @@
     ]
   },
   {
-    "appName": "Platform",
+    "appName": "QA-3",
     "browser_checks": [
       {
         "filePath": "/browser-scripts/login.spec.ts",
@@ -124,7 +124,237 @@
     ]
   },
   {
-    "appName": "SRE",
+    "appName": "QA-4",
+    "browser_checks": [
+      {
+        "filePath": "/browser-scripts/login.spec.ts",
+        "frequency": 30,
+        "activated": true,
+        "urlShort": "login"
+      },
+      {
+        "filePath": "/browser-scripts/visit.spec.ts",
+        "frequency": 30,
+        "activated": true,
+        "urlShort": "visit"
+      }
+    ],
+    "api_checks": [
+      {
+        "url": "https://next-danube-webshop.vercel.app/",
+        "activated": true,
+        "method": "GET",
+        "frequency": 5,
+        "setup": "",
+        "assertions": [["statusCode().equals(200)"]],
+        "urlShort": "basic-up"
+      },
+      {
+        "url": "https://next-danube-webshop-backend.vercel.app//api/v1/books",
+        "activated": true,
+        "method": "GET",
+        "frequency": 5,
+        "setup": "",
+        "assertions": [["statusCode().equals(200)"]],
+        "urlShort": "books"
+      },
+      {
+        "url": "https://next-danube-webshop-backend.vercel.app/api/v1/users",
+        "activated": false,
+        "method": "GET",
+        "frequency": 5,
+        "setup": "",
+        "assertions": [["statusCode().equals(200)"]],
+        "urlShort": "users"
+      }
+    ]
+  },
+  {
+    "appName": "QA-5",
+    "browser_checks": [
+      {
+        "filePath": "/browser-scripts/login.spec.ts",
+        "frequency": 30,
+        "activated": true,
+        "urlShort": "login"
+      },
+      {
+        "filePath": "/browser-scripts/visit.spec.ts",
+        "frequency": 30,
+        "activated": true,
+        "urlShort": "visit"
+      }
+    ],
+    "api_checks": [
+      {
+        "url": "https://next-danube-webshop.vercel.app/",
+        "activated": true,
+        "method": "GET",
+        "frequency": 5,
+        "setup": "",
+        "assertions": [["statusCode().equals(200)"]],
+        "urlShort": "basic-up"
+      },
+      {
+        "url": "https://next-danube-webshop-backend.vercel.app//api/v1/books",
+        "activated": true,
+        "method": "GET",
+        "frequency": 5,
+        "setup": "",
+        "assertions": [["statusCode().equals(200)"]],
+        "urlShort": "books"
+      },
+      {
+        "url": "https://next-danube-webshop-backend.vercel.app/api/v1/users",
+        "activated": false,
+        "method": "GET",
+        "frequency": 5,
+        "setup": "",
+        "assertions": [["statusCode().equals(200)"]],
+        "urlShort": "users"
+      }
+    ]
+  },
+  {
+    "appName": "QA-6",
+    "browser_checks": [
+      {
+        "filePath": "/browser-scripts/login.spec.ts",
+        "frequency": 30,
+        "activated": true,
+        "urlShort": "login"
+      },
+      {
+        "filePath": "/browser-scripts/visit.spec.ts",
+        "frequency": 30,
+        "activated": true,
+        "urlShort": "visit"
+      }
+    ],
+    "api_checks": [
+      {
+        "url": "https://next-danube-webshop.vercel.app/",
+        "activated": true,
+        "method": "GET",
+        "frequency": 5,
+        "setup": "",
+        "assertions": [["statusCode().equals(200)"]],
+        "urlShort": "basic-up"
+      },
+      {
+        "url": "https://next-danube-webshop-backend.vercel.app//api/v1/books",
+        "activated": true,
+        "method": "GET",
+        "frequency": 5,
+        "setup": "",
+        "assertions": [["statusCode().equals(200)"]],
+        "urlShort": "books"
+      },
+      {
+        "url": "https://next-danube-webshop-backend.vercel.app/api/v1/users",
+        "activated": false,
+        "method": "GET",
+        "frequency": 5,
+        "setup": "",
+        "assertions": [["statusCode().equals(200)"]],
+        "urlShort": "users"
+      }
+    ]
+  },
+  {
+    "appName": "QA-7",
+    "browser_checks": [
+      {
+        "filePath": "/browser-scripts/login.spec.ts",
+        "frequency": 30,
+        "activated": true,
+        "urlShort": "login"
+      },
+      {
+        "filePath": "/browser-scripts/visit.spec.ts",
+        "frequency": 30,
+        "activated": true,
+        "urlShort": "visit"
+      }
+    ],
+    "api_checks": [
+      {
+        "url": "https://next-danube-webshop.vercel.app/",
+        "activated": true,
+        "method": "GET",
+        "frequency": 5,
+        "setup": "",
+        "assertions": [["statusCode().equals(200)"]],
+        "urlShort": "basic-up"
+      },
+      {
+        "url": "https://next-danube-webshop-backend.vercel.app//api/v1/books",
+        "activated": true,
+        "method": "GET",
+        "frequency": 5,
+        "setup": "",
+        "assertions": [["statusCode().equals(200)"]],
+        "urlShort": "books"
+      },
+      {
+        "url": "https://next-danube-webshop-backend.vercel.app/api/v1/users",
+        "activated": false,
+        "method": "GET",
+        "frequency": 5,
+        "setup": "",
+        "assertions": [["statusCode().equals(200)"]],
+        "urlShort": "users"
+      }
+    ]
+  },
+  {
+    "appName": "QA-8",
+    "browser_checks": [
+      {
+        "filePath": "/browser-scripts/login.spec.ts",
+        "frequency": 30,
+        "activated": true,
+        "urlShort": "login"
+      },
+      {
+        "filePath": "/browser-scripts/visit.spec.ts",
+        "frequency": 30,
+        "activated": true,
+        "urlShort": "visit"
+      }
+    ],
+    "api_checks": [
+      {
+        "url": "https://next-danube-webshop.vercel.app/",
+        "activated": true,
+        "method": "GET",
+        "frequency": 5,
+        "setup": "",
+        "assertions": [["statusCode().equals(200)"]],
+        "urlShort": "basic-up"
+      },
+      {
+        "url": "https://next-danube-webshop-backend.vercel.app//api/v1/books",
+        "activated": true,
+        "method": "GET",
+        "frequency": 5,
+        "setup": "",
+        "assertions": [["statusCode().equals(200)"]],
+        "urlShort": "books"
+      },
+      {
+        "url": "https://next-danube-webshop-backend.vercel.app/api/v1/users",
+        "activated": false,
+        "method": "GET",
+        "frequency": 5,
+        "setup": "",
+        "assertions": [["statusCode().equals(200)"]],
+        "urlShort": "users"
+      }
+    ]
+  },
+  {
+    "appName": "QA-9",
     "browser_checks": [
       {
         "filePath": "/browser-scripts/login.spec.ts",
