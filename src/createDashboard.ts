@@ -7,10 +7,10 @@ export function createDashboard(appName: string, index: number) {
     header: `${appName} Dashboard`,
     description: 'Dashboard associated with a basic demo',
     tags: [formattedAppName],
-    useTagsAndOperator: false,
+    useTagsAndOperator: true,
     isPrivate: true,
     enableIncidents: true,
-    logo: 'https://upload.wikimedia.org/wikipedia/commons/c/c5/Squarespace_Logo.png',
+    logo: 'https://weliveentertainment.com/wp-content/uploads/2017/06/ca-1095x578.jpg',
     customUrl: `${formattedAppName}-dashboard-${index + 1}`,
   });
 }

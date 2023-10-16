@@ -1,6 +1,6 @@
 [
   {
-    "appName": "QA-1",
+    "appName": "app-1",
     "browser_checks": [
       {
         "filePath": "/browser-scripts/login.spec.ts",
@@ -47,7 +47,7 @@
     ]
   },
   {
-    "appName": "QA-2",
+    "appName": "app-2",
     "browser_checks": [
       {
         "filePath": "/browser-scripts/login.spec.ts",
@@ -78,7 +78,7 @@
     ]
   },
   {
-    "appName": "QA-3",
+    "appName": "app-3",
     "browser_checks": [
       {
         "filePath": "/browser-scripts/login.spec.ts",
@@ -124,7 +124,7 @@
     ]
   },
   {
-    "appName": "QA-4",
+    "appName": "app-4",
     "browser_checks": [
       {
         "filePath": "/browser-scripts/login.spec.ts",
@@ -170,7 +170,7 @@
     ]
   },
   {
-    "appName": "QA-5",
+    "appName": "app-5",
     "browser_checks": [
       {
         "filePath": "/browser-scripts/login.spec.ts",
@@ -216,7 +216,7 @@
     ]
   },
   {
-    "appName": "QA-6",
+    "appName": "app-6",
     "browser_checks": [
       {
         "filePath": "/browser-scripts/login.spec.ts",
@@ -262,7 +262,7 @@
     ]
   },
   {
-    "appName": "QA-7",
+    "appName": "app-7",
     "browser_checks": [
       {
         "filePath": "/browser-scripts/login.spec.ts",
@@ -308,7 +308,7 @@
     ]
   },
   {
-    "appName": "QA-8",
+    "appName": "app-8",
     "browser_checks": [
       {
         "filePath": "/browser-scripts/login.spec.ts",
@@ -354,7 +354,7 @@
     ]
   },
   {
-    "appName": "QA-9",
+    "appName": "app-9",
     "browser_checks": [
       {
         "filePath": "/browser-scripts/login.spec.ts",
