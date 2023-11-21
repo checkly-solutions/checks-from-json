@@ -49,7 +49,7 @@ export function createApiCheck(
       activated: check.activated,
       frequency: check.frequency,
       tags: ['API', appName, category, "cli"],
-      degradedResponseTime: 10000,
+      degradedResponseTime: 5000,
       maxResponseTime: 20000,
       request: {
         url: check.url,
