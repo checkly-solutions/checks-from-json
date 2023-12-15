@@ -1,4 +1,4 @@
-# Sherwin Sample Project
+# Sample Project
 
 ## Important commands
 
