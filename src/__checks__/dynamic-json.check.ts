@@ -6,6 +6,7 @@ import { createDashboard } from '../createDashboard';
 import { createGroup } from '../createGroup';
 import { createApiCheck } from '../createAPIcheck';
 import { createBrowserCheck } from '../createBrowserCheck';
+import { createMultiStepCheck } from '../createMultiStep';
 
 // Read the JSON data from the file
 const data = fs.readFileSync(
@@ -29,40 +30,18 @@ apps.forEach((app: any) => {
       const checkCreators: any = {
         browser_check: createBrowserCheck,
         api_check: createApiCheck,
+        multi_check: createMultiStepCheck
       };
 
       // Iterate over each tier in the app
       app[tier].forEach((checkCategory: { [key: string]: any[] }) => {
         // Iterate over each type of check within the checkCategory
         Object.keys(checkCategory).forEach((checkType) => {
-          // Retrieve the array of checks for the current checkType
-          console.log(checkType, '-------- checkType  ------');
           const checks = checkCategory[checkType];
-
-          // Check if the checkType is one of the known types and is an array
           if (Array.isArray(checks)) {
-            console.log(checks, '--------- check of above ----------');
-            // Use type assertion to assert that checkCreators[checkType] is a function
-            const checkCreatorFunction = checkCreators[checkType] as (
-              app: any,
-              tier: string,
-              check: any,
-              group: any
-            ) => void;
-
-            // Check if checkCreatorFunction is a function before calling it
-            if (typeof checkCreatorFunction === 'function') {
-              console.log('checkCreatorFunction hit');
-            
-              // Log the parameters being passed to the check creator function
-              console.log(`Parameters for ${checkType}:`, { app, tier, checks, group });
-            
-              checks.forEach((check) => {
-                checkCreatorFunction(app, tier, check, group);
-              });
-            }
-          } else {
-            console.log(`No checks found for ${tier}`);
+            checks.forEach((check) => {
+              checkCreators[checkType]?.(app, tier, check, group);
+            });
           }
         });
       });

@@ -1,7 +1,7 @@
 import path from 'path';
-import { BrowserCheck } from 'checkly/constructs';
+import { MultiStepCheck } from 'checkly/constructs';
 
-export const createBrowserCheck = (
+export const createMultiStepCheck = (
   app: any,
   category: string,
   check: any,
@@ -10,10 +10,9 @@ export const createBrowserCheck = (
 
   let handledAppName = app.appName.split(' ').join('-').toLowerCase();
 
-
   const filePath = check.filePath.length > 0 ? check.filePath : undefined;
 
-  new BrowserCheck(`${check.urlShort}-${handledAppName}-${category}`, {
+  new MultiStepCheck(`${check.urlShort}-${handledAppName}-${category}`, {
     name: `${check.urlShort} ${handledAppName} ${category}`,
     frequency: check.frequency,
     group,

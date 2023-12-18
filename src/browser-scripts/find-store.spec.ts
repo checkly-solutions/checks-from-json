@@ -8,7 +8,6 @@ test("find a store", async ({ page }) => {
   await page.getByRole("link", { name: "Find A Store" }).click();
   const page1 = await page1Promise;
   await page1.waitForTimeout(3000);
-  await page1.getByPlaceholder("City, State and/or Postal Code").click();
   await page1.getByPlaceholder("City, State and/or Postal Code").fill("31404");
   await page1.waitForTimeout(3000);
   await page1.getByPlaceholder("City, State and/or Postal Code").press("Enter");

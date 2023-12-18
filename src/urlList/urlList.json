@@ -21,6 +21,14 @@
             "assertions": [["statusCode().equals(200)"]],
             "urlShort": "sherwin-ar"
           }
+        ],
+        "multi_check": [
+          {
+            "filePath": "/multi-scripts/multi-CRUD.spec.ts",
+            "frequency": 5,
+            "activated": true,
+            "urlShort": "multi-CRUD"
+          }
         ]
       }
     ],
