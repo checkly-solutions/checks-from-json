@@ -12,39 +12,47 @@ import {
   createMSTeamsWebhookChannel,
 } from './alert-channels'; // Import alert channels
 
-// assign the appropriate alert to the appropriate tier
-const tier4Channels: AlertChannel[] = [emailChannelTier4];
-const tier3Channels: AlertChannel[] = [
-  emailChannelTier3,
-  createServiceNowChannel('3'),
-  createMSTeamsWebhookChannel('3'),
-];
-const tier2Channels: AlertChannel[] = [
-  emailChannelTier2,
-  createServiceNowChannel('2'),
-  createMSTeamsWebhookChannel('2'),
-];
-const tier1Channels: AlertChannel[] = [
-  emailChannelTier1,
-  createServiceNowChannel('1'),
-  createMSTeamsWebhookChannel('1'),
-];
 
-const tierChannelMapping: any = {
-  tier1: tier1Channels,
-  tier2: tier2Channels,
-  tier3: tier3Channels,
-  tier4: tier4Channels,
-};
+// // assign the appropriate alert to the appropriate tier
+// const tier4Channels: AlertChannel[] = [emailChannelTier4];
+// const tier3Channels: AlertChannel[] = [
+//   emailChannelTier3,
+//   createServiceNowChannel('3'),
+//   createMSTeamsWebhookChannel('3'),
+// ];
+// const tier2Channels: AlertChannel[] = [
+//   emailChannelTier2,
+//   createServiceNowChannel('2'),
+//   createMSTeamsWebhookChannel('2'),
+// ];
+// const tier1Channels: AlertChannel[] = [
+//   emailChannelTier1,
+//   createServiceNowChannel('1'),
+//   createMSTeamsWebhookChannel('1'),
+// ];
+
+// const tierChannelMapping: any = {
+//   tier1: tier1Channels,
+//   tier2: tier2Channels,
+//   tier3: tier3Channels,
+//   tier4: tier4Channels,
+// };
 
 export function createGroup(appName: string, category: string) {
   const formattedAppName = appName.split(' ').join('-').toLowerCase();
 
-  const alertChannels = tierChannelMapping[category];
+  // const alertChannels = tierChannelMapping[category];
 
-  if (!alertChannels) {
-    throw new Error(`Invalid category: ${category}`);
-  }
+  // if (!alertChannels) {
+  //   throw new Error(`Invalid category: ${category}`);
+  // }
+  const alertChannels = [
+    emailChannelTier1,
+    emailChannelTier2,
+    emailChannelTier3,
+    emailChannelTier4,
+  ]
+  
   
   return new CheckGroup(`${formattedAppName}-${category}-group`, {
     name: `${formattedAppName} ${category} Group`,

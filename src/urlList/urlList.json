@@ -1,14 +1,14 @@
 [
   {
-    "appName": "Sherwin-USA",
-    "tier1": [
+    "appName": "Env-Observability",
+    "app1": [
       {
         "browser_check": [
           {
             "filePath": "/browser-scripts/basic-up.spec.ts",
             "frequency": 5,
             "activated": true,
-            "urlShort": "basic-up"
+            "urlShort": "app-userflow"
           }
         ],
         "api_check": [
@@ -19,7 +19,7 @@
             "frequency": 5,
             "setup": "",
             "assertions": [["statusCode().equals(200)"]],
-            "urlShort": "sherwin-ar"
+            "urlShort": "service-1"
           }
         ],
         "multi_check": [
@@ -27,13 +27,87 @@
             "filePath": "/multi-scripts/multi-CRUD.spec.ts",
             "frequency": 5,
             "activated": true,
-            "urlShort": "multi-CRUD"
+            "urlShort": "service-2"
           }
         ]
       }
     ],
-    "tier2": [],
-    "tier3": [],
-    "tier4": []
+    "app2": [],
+    "app3": [],
+    "app4": []
+  },
+  {
+    "appName": "Env-Trust",
+    "app1": [
+      {
+        "browser_check": [
+          {
+            "filePath": "/browser-scripts/basic-up.spec.ts",
+            "frequency": 5,
+            "activated": true,
+            "urlShort": "app-userflow"
+          }
+        ],
+        "api_check": [
+          {
+            "url": "https://www.sherwin.com.ar",
+            "activated": true,
+            "method": "GET",
+            "frequency": 5,
+            "setup": "",
+            "assertions": [["statusCode().equals(200)"]],
+            "urlShort": "service-1"
+          }
+        ],
+        "multi_check": [
+          {
+            "filePath": "/multi-scripts/multi-CRUD.spec.ts",
+            "frequency": 5,
+            "activated": true,
+            "urlShort": "service-2"
+          }
+        ]
+      }
+    ],
+    "app2": [],
+    "app3": [],
+    "app4": []
+  },
+  {
+    "appName": "Env-Quality",
+    "app1": [
+      {
+        "browser_check": [
+          {
+            "filePath": "/browser-scripts/basic-up.spec.ts",
+            "frequency": 5,
+            "activated": true,
+            "urlShort": "app-userflow"
+          }
+        ],
+        "api_check": [
+          {
+            "url": "https://www.sherwin.com.ar",
+            "activated": true,
+            "method": "GET",
+            "frequency": 5,
+            "setup": "",
+            "assertions": [["statusCode().equals(200)"]],
+            "urlShort": "service-1"
+          }
+        ],
+        "multi_check": [
+          {
+            "filePath": "/multi-scripts/multi-CRUD.spec.ts",
+            "frequency": 5,
+            "activated": true,
+            "urlShort": "service-2"
+          }
+        ]
+      }
+    ],
+    "app2": [],
+    "app3": [],
+    "app4": []
   }
 ]

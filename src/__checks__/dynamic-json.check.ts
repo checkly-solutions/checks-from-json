@@ -14,6 +14,7 @@ const data = fs.readFileSync(
   'utf-8'
 );
 
+// Read the JSON data from the file
 const apps = JSON.parse(data);
 
 // Iterate through the array to create Dashboards based on the app name attribute
@@ -21,7 +22,7 @@ apps.forEach((app: any) => {
   const dashboard = createDashboard(app.appName);
 
   // Read through new tier based categories
-  ['tier4', 'tier3', 'tier2', 'tier1'].forEach((tier) => {
+  ['app4', 'app3', 'app2', 'app1'].forEach((tier) => {
     console.log(tier, 'tier');
     if (app[tier].length >= 1) {
       const group = createGroup(app.appName, tier);
@@ -30,7 +31,7 @@ apps.forEach((app: any) => {
       const checkCreators: any = {
         browser_check: createBrowserCheck,
         api_check: createApiCheck,
-        multi_check: createMultiStepCheck
+        multi_check: createMultiStepCheck,
       };
 
       // Iterate over each tier in the app

@@ -3,7 +3,7 @@ import {
 } from 'checkly/constructs';
 
 // Maintenance Window
-export const maintenanceWindow = new MaintenanceWindow('engage-maintenance-window-1', {
+new MaintenanceWindow('test-maintenance-window-1', {
   name: 'Programmed website maintenance',
   tags: ['production', 'browser', 'demo'],
   // 2023-07-20 at 11 PM EST in UTC

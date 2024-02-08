@@ -1,4 +1,4 @@
-import { defineConfig } from 'checkly'
+import { defineConfig } from 'checkly';
 
 /**
  * See https://www.checklyhq.com/docs/cli/project-structure/
@@ -25,7 +25,7 @@ const config = defineConfig({
      */
     runtimeId: '2023.09',
     /* A glob pattern that matches the Checks inside your repo, see https://www.checklyhq.com/docs/cli/using-check-test-match/ */
-    checkMatch: 'src/__checks__/*.check.ts',
+    checkMatch: 'src/__c*/*.check.ts',
     // browserChecks: {
     //   /* A glob pattern matches any Playwright .spec.ts files and automagically creates a Browser Check. This way, you
     //   * can just write native Playwright code. See https://www.checklyhq.com/docs/cli/using-check-test-match/
@@ -39,6 +39,6 @@ const config = defineConfig({
     /* An array of default reporters to use when a reporter is not specified with the "--reporter" flag */
     reporters: ['list'],
   },
-})
+});
 
-export default config
+export default config;
