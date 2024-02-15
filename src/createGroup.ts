@@ -65,7 +65,7 @@ export function createGroup(appName: string, category: string) {
     locations: ['us-east-1', 'us-west-2'],
 
     // if using private locations uncomment this line and comment out locations array. 
-    // privateLocations: ['sherwintest-privatelocation']
+    // privateLocations: ['private-privatelocation']
     
     // The tags we pass a group will dictate how they appear in dashboards
     tags: [formattedAppName, category],

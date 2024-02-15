@@ -1,4 +1,4 @@
-# Sherwin Sample Project
+# Checks from JSON Project
 
 ## Important commands
 
@@ -36,7 +36,7 @@ This repository was made under the assumption that each team or work group was g
   -- __checks__
     --- json-checks.check.ts
       Allows for the importing of resources from checkly and the current repository.
-      We read the sherwinExternalURLs.json file and create a series of resources from them based on the structure of the array of objects.
+      We read the urlList.json file and create a series of resources from them based on the structure of the array of objects.
 
     --- demo-checks.test.ts
       unused reference resource
@@ -46,7 +46,7 @@ This repository was made under the assumption that each team or work group was g
     unused reference resource
 
   -- urlList
-    --- sherwinExternalURLs.json
+    --- urlList.json
     An array of objects that contain the app name of what the repository is responsible for, the rating of the url, the method we reach the URL by, and whether that URL is activated.
 
   -- alert-channels.ts
