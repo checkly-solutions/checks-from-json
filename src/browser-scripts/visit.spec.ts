@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from '@playwright/test'
 
 test('does a simple visit and confirms the title and that it looks correct', async ({ page }) => {
   test.setTimeout(60000);
