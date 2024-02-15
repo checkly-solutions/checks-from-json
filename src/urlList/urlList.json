@@ -5,7 +5,7 @@
       {
         "browser_check": [
           {
-            "filePath": "/browser-scripts/basic-up.spec.ts",
+            "filePath": "/browser-scripts/visit.spec.ts",
             "frequency": 5,
             "activated": true,
             "urlShort": "app-userflow"
@@ -13,7 +13,7 @@
         ],
         "api_check": [
           {
-            "url": "https://www.sherwin.com.ar",
+            "url": "https://next-danube-webshop-backend.vercel.app/api/v1/books",
             "activated": true,
             "method": "GET",
             "frequency": 5,
@@ -42,7 +42,7 @@
       {
         "browser_check": [
           {
-            "filePath": "/browser-scripts/basic-up.spec.ts",
+            "filePath": "/browser-scripts/visit.spec.ts",
             "frequency": 5,
             "activated": true,
             "urlShort": "app-userflow"
@@ -50,7 +50,7 @@
         ],
         "api_check": [
           {
-            "url": "https://www.sherwin.com.ar",
+            "url": "https://next-danube-webshop-backend.vercel.app/api/v1/books",
             "activated": true,
             "method": "GET",
             "frequency": 5,
@@ -79,7 +79,7 @@
       {
         "browser_check": [
           {
-            "filePath": "/browser-scripts/basic-up.spec.ts",
+            "filePath": "/browser-scripts/visit.spec.ts",
             "frequency": 5,
             "activated": true,
             "urlShort": "app-userflow"
@@ -87,7 +87,7 @@
         ],
         "api_check": [
           {
-            "url": "https://www.sherwin.com.ar",
+            "url": "https://next-danube-webshop-backend.vercel.app/api/v1/books",
             "activated": true,
             "method": "GET",
             "frequency": 5,
