@@ -7,9 +7,9 @@ const assignedTeamName = 'jonathan example';
 const applicationName = 'smile smile';
 // currently using placeholders related to the Observability Team alerting, feel free to update to team specific
 const msTeamsAlertUrl =
-  'https://swcompany.webhook.office.com/webhookb2/094e8920-b8d3-49ee-a7d4-8576b636ecbb@44b79a67-d972-49ba-9167-8eb05f754a1a/IncomingWebhook/620a617c2e964c7e98fac9d47c8f89ff/71493bd4-0176-499c-bc34-1064b9e3e72e';
+  'https://company.webhook.office.com/webhookb2/UUID/IncomingWebhook/STRING/UUID';
 const serviceNowAlertUrl =
-  'https://sherwindev.service-now.com/api/now/import/u_incident_staging';
+  'https://gmaildev.service-now.com/api/now/import/u_incident_staging';
 
 // This sanitizes the entries above, so that they can be added in the naming conventions below
 const formattedAppName = applicationName.split(' ').join('-').toLowerCase();
@@ -46,12 +46,12 @@ export function createServiceNowChannel(tier: string): WebhookAlertChannel {
       sendDegraded: false,
       sslExpiry: false,
       template: `{
-                "u_caller": "venkata.s.matta@sherwin.com",
+                "u_caller": "john.doe@gmail.com",
                 "u_state": ${tier},
                 "u_impact": ${tier},
                 "u_urgency": ${tier},
-                "u_assignment_group": "edps-application-performance-mgmt",
-                "u_assigned_to": "venkata.s.matta@sherwin.com",
+                "u_assignment_group": ${formattedTeamName},
+                "u_assigned_to": "john.doe@gmail.com",
                 "u_short_description": "{{ALERT_TITLE}}",
                 "u_description": "{{ALERT_TYPE}} {{STARTED_AT}} ({{RESPONSE_TIME}}ms) {{REQUEST_URL}}",
                 "u_work_notes": "Here are some work notes",
@@ -129,7 +129,7 @@ export function createMSTeamsWebhookChannel(tier: string): WebhookAlertChannel {
 export const emailChannelTier1 = new EmailAlertChannel(
   `email-${formattedTeamName}-${formattedAppName}-1`,
   {
-    address: '1venkata.s.matta@sherwin.com',
+    address: '1john.doe@gmail.com',
     ...sendDefaults,
   }
 );
@@ -138,7 +138,7 @@ export const emailChannelTier1 = new EmailAlertChannel(
 export const emailChannelTier2 = new EmailAlertChannel(
   `email-${formattedTeamName}-${formattedAppName}-2`,
   {
-    address: '2venkata.s.matta@sherwin.com',
+    address: '2john.doe@gmail.com',
     ...sendDefaults,
   }
 );
@@ -147,7 +147,7 @@ export const emailChannelTier2 = new EmailAlertChannel(
 export const emailChannelTier3 = new EmailAlertChannel(
   `email-${formattedTeamName}-${formattedAppName}-3`,
   {
-    address: '3venkata.s.matta@sherwin.com',
+    address: '3john.doe@gmail.com',
     ...sendDefaults,
   }
 );
@@ -156,7 +156,7 @@ export const emailChannelTier3 = new EmailAlertChannel(
 export const emailChannelTier4 = new EmailAlertChannel(
   `email-${formattedTeamName}-${formattedAppName}-4`,
   {
-    address: '4venkata.s.matta@sherwin.com',
+    address: '4john.doe@gmail.com',
     ...sendDefaults,
   }
 );
