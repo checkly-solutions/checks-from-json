@@ -23,7 +23,6 @@ apps.forEach((app: any) => {
 
   // Read through new tier based categories
   ['app4', 'app3', 'app2', 'app1'].forEach((tier) => {
-    console.log(tier, 'tier');
     if (app[tier].length >= 1) {
       const group = createGroup(app.appName, tier);
 
