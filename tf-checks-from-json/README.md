@@ -224,8 +224,6 @@ This tool mirrors the structure of `cli-checks-from-json/` (Checkly CLI implemen
 
 ## Related Documentation
 
-- **Checkly Terraform Provider**: See `_kb/checkly_tf_docs/` for resource documentation
-- **Checkly Platform**: See `_kb/checkly_docs/` for platform concepts
 - **CLI Reference**: See `cli-checks-from-json/` for original implementation
 
 ## Troubleshooting
