@@ -72,29 +72,91 @@ export const ASSERTION_COMPARISON_MAP: { [key: string]: string } = {
 };
 
 /**
- * Tier names in priority order (highest to lowest)
- * Used for iterating through tiers in the correct order
+ * Valid alert escalation types
  */
-export const TIER_ORDER: string[] = ['app4', 'app3', 'app2', 'app1'];
+export const VALID_ESCALATION_TYPES = ['RUN_BASED', 'TIME_BASED'] as const;
 
 /**
- * Email alert channel tier mapping
- * Maps tier names to alert channel resource IDs
+ * Valid retry strategy types
  */
-export const ALERT_CHANNEL_TIER_MAP: { [key: string]: string } = {
-  app1: 'email_tier_1',
-  app2: 'email_tier_2',
-  app3: 'email_tier_3',
-  app4: 'email_tier_4',
-};
+export const VALID_RETRY_TYPES = [
+  'FIXED',
+  'LINEAR',
+  'EXPONENTIAL',
+  'SINGLE_RETRY',
+  'NO_RETRIES'
+] as const;
 
 /**
- * All alert channel resource IDs
- * Used for subscribing groups to all channels
+ * Valid frequency values (in minutes)
+ * Covers standard intervals from 0 (on-demand) to 1440 (daily)
  */
-export const ALL_ALERT_CHANNEL_IDS: string[] = [
-  'email_tier_1',
-  'email_tier_2',
-  'email_tier_3',
-  'email_tier_4',
-];
+export const VALID_FREQUENCY_VALUES = [
+  0, 1, 2, 5, 10, 15, 30, 60, 120, 180, 360, 720, 1440
+] as const;
+
+/**
+ * Valid HTTP request body types
+ */
+export const VALID_BODY_TYPES = ['NONE', 'JSON', 'FORM', 'RAW', 'GRAPHQL'] as const;
+
+/**
+ * Valid DNS record types
+ */
+export const VALID_DNS_RECORD_TYPES = [
+  'A', 'AAAA', 'CNAME', 'MX', 'NS', 'TXT', 'SOA', 'PTR', 'CAA'
+] as const;
+
+/**
+ * Valid IP family options
+ */
+export const VALID_IP_FAMILIES = ['IPv4', 'IPv6'] as const;
+
+/**
+ * Valid time units for heartbeat monitors
+ */
+export const VALID_HEARTBEAT_TIME_UNITS = ['minute', 'hour', 'day'] as const;
+
+/**
+ * Valid dashboard width options
+ */
+export const VALID_DASHBOARD_WIDTHS = ['FULL', '960PX'] as const;
+
+/**
+ * Valid dashboard refresh rates (in seconds)
+ */
+export const VALID_DASHBOARD_REFRESH_RATES = [60, 300, 600] as const;
+
+/**
+ * Valid dashboard pagination rates (in seconds)
+ */
+export const VALID_DASHBOARD_PAGINATION_RATES = [30, 60, 300] as const;
+
+/**
+ * Maximum response time thresholds by resource type
+ */
+export const MAX_RESPONSE_TIME_HTTP = 30000;  // 30 seconds for HTTP-based checks
+export const MAX_RESPONSE_TIME_TCP_DNS = 5000;  // 5 seconds for TCP/DNS monitors
+
+/**
+ * Valid run-based escalation thresholds
+ */
+export const VALID_RUN_BASED_THRESHOLDS = [1, 2, 3, 4, 5] as const;
+
+/**
+ * Valid time-based escalation thresholds (in minutes)
+ */
+export const VALID_TIME_BASED_THRESHOLDS = [5, 10, 15, 30] as const;
+
+/**
+ * Valid reminder intervals (in minutes)
+ */
+export const VALID_REMINDER_INTERVALS = [5, 10, 15, 30] as const;
+
+/**
+ * Valid parallel run failure percentages
+ */
+export const VALID_PARALLEL_RUN_PERCENTAGES = [
+  10, 20, 30, 40, 50, 60, 70, 80, 90, 100
+] as const;
+

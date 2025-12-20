@@ -71,7 +71,7 @@ export function readScript(scriptPath: string, basePath?: string): string {
   // Default base path is the CLI implementation's src directory
   const defaultBasePath = path.join(
     __dirname,
-    '../../../cli-checks-from-json/src'
+    '../../src'
   );
   const resolvedBasePath = basePath || defaultBasePath;
 

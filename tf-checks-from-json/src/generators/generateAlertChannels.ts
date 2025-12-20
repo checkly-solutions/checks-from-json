@@ -1,38 +1,62 @@
 /**
  * Generator for Checkly alert channel resources
- * Parses alert-channels.ts and generates Terraform alert channel resources
+ * Creates alert channels for all supported types based on JSON definitions
+ * Supports: Email, SMS, Slack, PagerDuty, Opsgenie, Webhook, and Phone Call
  */
 
 import path from 'path';
-import fs from 'fs';
 import { writeHCL } from '../utils/fileUtils';
-
-/**
- * Email alert channel configuration
- */
-interface EmailChannelConfig {
-  tier: number;
-  email: string;
-  resourceId: string;
-}
+import { formatHCLValue } from '../utils/variableResolver';
+import {
+  AlertChannelDefinition,
+  EmailChannelConfig,
+  SmsChannelConfig,
+  SlackChannelConfig,
+  PagerdutyChannelConfig,
+  OpsgenieChannelConfig,
+  WebhookChannelConfig,
+  CallChannelConfig,
+} from '../types/json-types';
 
 /**
  * Generate alert channel resources and write to alert-channels.tf
+ * Creates all channel types based on alert channel definitions from JSON
  *
  * @param outputDir - The root output directory path
+ * @param alertChannelDefs - Array of alert channel definitions from JSON
  *
  * @example
- * generateAlertChannels('/path/to/__tf_checks__')
- * // Creates /path/to/__tf_checks__/alert-channels.tf with email channel resources
+ * generateAlertChannels('/path/to/__tf_checks__', [
+ *   { id: "email_tier1", type: "email", config: { address: "var:email" } },
+ *   { id: "slack_alerts", type: "slack", config: { channel: "#alerts", url: "var:slack_url" } }
+ * ])
+ * // Creates /path/to/__tf_checks__/alert-channels.tf with both email and slack resources
  */
-export function generateAlertChannels(outputDir: string): void {
-  // Parse email channels from alert-channels.ts
-  const emailChannels = parseEmailChannels();
+export function generateAlertChannels(
+  outputDir: string,
+  alertChannelDefs: AlertChannelDefinition[]
+): void {
+  // Strategy pattern: map channel type to generator function
+  const generators: { [key: string]: (def: AlertChannelDefinition) => string } = {
+    email: generateEmailChannelHCL,
+    sms: generateSmsChannelHCL,
+    slack: generateSlackChannelHCL,
+    pagerduty: generatePagerdutyChannelHCL,
+    opsgenie: generateOpsgenieChannelHCL,
+    webhook: generateWebhookChannelHCL,
+    call: generateCallChannelHCL,
+  };
 
-  // Generate HCL for all email channels
-  const hclBlocks = emailChannels.map((channel) =>
-    generateEmailChannelHCL(channel)
-  );
+  // Generate HCL for all alert channels
+  const hclBlocks = alertChannelDefs.map((def) => {
+    const generator = generators[def.type];
+    if (!generator) {
+      throw new Error(
+        `Unsupported alert channel type: "${def.type}" for channel "${def.id}"`
+      );
+    }
+    return generator(def);
+  });
 
   // Combine all blocks with blank lines between them
   const content = hclBlocks.join('\n\n');
@@ -43,84 +67,236 @@ export function generateAlertChannels(outputDir: string): void {
 }
 
 /**
- * Parse email channel definitions from the CLI alert-channels.ts file
- * Extracts tier numbers and email addresses
+ * Generate common notification flags for alert channels
+ * Applies default values for optional settings
  *
- * @returns Array of email channel configurations
+ * @param def - Alert channel definition
+ * @returns HCL lines for notification flags
  */
-function parseEmailChannels(): EmailChannelConfig[] {
-  // Path to the CLI alert-channels.ts file
-  const alertChannelsPath = path.join(
-    __dirname,
-    '../../../cli-checks-from-json/src/alert-channels.ts'
-  );
+function generateNotificationFlags(def: AlertChannelDefinition): string {
+  const send_recovery = def.send_recovery ?? true;
+  const send_failure = def.send_failure ?? true;
+  const send_degraded = def.send_degraded ?? false;
 
-  // Read the file content
-  const content = fs.readFileSync(alertChannelsPath, 'utf-8');
-
-  // Parse email channels using regex
-  // Looking for patterns like:
-  // export const emailChannelTier1 = new EmailAlertChannel(
-  //   `email-${formattedTeamName}-${formattedAppName}-1`,
-  //   {
-  //     address: '1john.doe@gmail.com',
-  const emailChannels: EmailChannelConfig[] = [];
-
-  // Regex to match email channel definitions
-  // Match: emailChannelTier{N} ... address: '{email}'
-  const tierRegex = /emailChannelTier(\d+)/g;
-  const addressRegex = /address:\s*['"]([^'"]+)['"]/g;
-
-  let tierMatch;
-  const tiers: number[] = [];
-  while ((tierMatch = tierRegex.exec(content)) !== null) {
-    tiers.push(parseInt(tierMatch[1]));
-  }
-
-  let addressMatch;
-  const addresses: string[] = [];
-  while ((addressMatch = addressRegex.exec(content)) !== null) {
-    addresses.push(addressMatch[1]);
-  }
-
-  // Match tiers with addresses (should be same length)
-  for (let i = 0; i < tiers.length && i < addresses.length; i++) {
-    emailChannels.push({
-      tier: tiers[i],
-      email: addresses[i],
-      resourceId: `email_tier_${tiers[i]}`,
-    });
-  }
-
-  return emailChannels;
+  return `  send_recovery = ${send_recovery}
+  send_failure  = ${send_failure}
+  send_degraded = ${send_degraded}`;
 }
 
 /**
  * Generate HCL for an email alert channel resource
  *
- * @param channel - Email channel configuration
+ * @param def - Alert channel definition
  * @returns HCL resource block as a string
- *
- * @example
- * generateEmailChannelHCL({ tier: 1, email: '1john.doe@gmail.com', resourceId: 'email_tier_1' })
- * // Returns:
- * // resource "checkly_alert_channel" "email_tier_1" {
- * //   email {
- * //     address = "1john.doe@gmail.com"
- * //   }
- * //   send_recovery = true
- * //   send_failure  = true
- * //   send_degraded = false
- * // }
  */
-function generateEmailChannelHCL(channel: EmailChannelConfig): string {
-  return `resource "checkly_alert_channel" "${channel.resourceId}" {
+function generateEmailChannelHCL(def: AlertChannelDefinition): string {
+  const config = def.config as EmailChannelConfig;
+  const addressValue = formatHCLValue(config.address);
+
+  let hcl = `resource "checkly_alert_channel" "${def.id}" {
   email {
-    address = "${channel.email}"
+    address = ${addressValue}
   }
 
-  send_recovery = true
-  send_failure  = true
-  send_degraded = false
+${generateNotificationFlags(def)}`;
+
+  // Add SSL expiry settings if specified
+  if (def.ssl_expiry !== undefined) {
+    hcl += `\n  ssl_expiry           = ${def.ssl_expiry}`;
+  }
+  if (def.ssl_expiry_threshold !== undefined) {
+    hcl += `\n  ssl_expiry_threshold = ${def.ssl_expiry_threshold}`;
+  }
+
+  hcl += '\n}';
+  return hcl;
+}
+
+/**
+ * Generate HCL for an SMS alert channel resource
+ *
+ * @param def - Alert channel definition
+ * @returns HCL resource block as a string
+ */
+function generateSmsChannelHCL(def: AlertChannelDefinition): string {
+  const config = def.config as SmsChannelConfig;
+  const nameValue = formatHCLValue(config.name);
+  const numberValue = formatHCLValue(config.number);
+
+  return `resource "checkly_alert_channel" "${def.id}" {
+  sms {
+    name   = ${nameValue}
+    number = ${numberValue}
+  }
+
+${generateNotificationFlags(def)}
+}`;
+}
+
+/**
+ * Generate HCL for a Slack alert channel resource
+ *
+ * @param def - Alert channel definition
+ * @returns HCL resource block as a string
+ */
+function generateSlackChannelHCL(def: AlertChannelDefinition): string {
+  const config = def.config as SlackChannelConfig;
+  const channelValue = formatHCLValue(config.channel);
+  const urlValue = formatHCLValue(config.url);
+
+  return `resource "checkly_alert_channel" "${def.id}" {
+  slack {
+    channel = ${channelValue}
+    url     = ${urlValue}
+  }
+
+${generateNotificationFlags(def)}
+}`;
+}
+
+/**
+ * Generate HCL for a PagerDuty alert channel resource
+ *
+ * @param def - Alert channel definition
+ * @returns HCL resource block as a string
+ */
+function generatePagerdutyChannelHCL(def: AlertChannelDefinition): string {
+  const config = def.config as PagerdutyChannelConfig;
+  const serviceKeyValue = formatHCLValue(config.service_key);
+
+  let pagerdutyBlock = `  pagerduty {
+    service_key = ${serviceKeyValue}`;
+
+  // Add optional fields
+  if (config.account) {
+    const accountValue = formatHCLValue(config.account);
+    pagerdutyBlock += `\n    account     = ${accountValue}`;
+  }
+  if (config.service_name) {
+    const serviceNameValue = formatHCLValue(config.service_name);
+    pagerdutyBlock += `\n    service_name = ${serviceNameValue}`;
+  }
+
+  pagerdutyBlock += '\n  }';
+
+  return `resource "checkly_alert_channel" "${def.id}" {
+${pagerdutyBlock}
+
+${generateNotificationFlags(def)}
+}`;
+}
+
+/**
+ * Generate HCL for an Opsgenie alert channel resource
+ *
+ * @param def - Alert channel definition
+ * @returns HCL resource block as a string
+ */
+function generateOpsgenieChannelHCL(def: AlertChannelDefinition): string {
+  const config = def.config as OpsgenieChannelConfig;
+  const nameValue = formatHCLValue(config.name);
+  const apiKeyValue = formatHCLValue(config.api_key);
+  const regionValue = formatHCLValue(config.region);
+  const priorityValue = formatHCLValue(config.priority);
+
+  return `resource "checkly_alert_channel" "${def.id}" {
+  opsgenie {
+    name     = ${nameValue}
+    api_key  = ${apiKeyValue}
+    region   = ${regionValue}
+    priority = ${priorityValue}
+  }
+
+${generateNotificationFlags(def)}
+}`;
+}
+
+/**
+ * Generate HCL for a webhook alert channel resource
+ *
+ * @param def - Alert channel definition
+ * @returns HCL resource block as a string
+ */
+function generateWebhookChannelHCL(def: AlertChannelDefinition): string {
+  const config = def.config as WebhookChannelConfig;
+  const nameValue = formatHCLValue(config.name);
+  const urlValue = formatHCLValue(config.url);
+
+  let webhookBlock = `  webhook {
+    name   = ${nameValue}
+    url    = ${urlValue}`;
+
+  // Add optional method
+  if (config.method) {
+    const methodValue = formatHCLValue(config.method);
+    webhookBlock += `\n    method = ${methodValue}`;
+  }
+
+  // Add optional headers
+  if (config.headers && Object.keys(config.headers).length > 0) {
+    webhookBlock += '\n    \n    headers = {';
+    Object.entries(config.headers).forEach(([key, value]) => {
+      const formattedValue = formatHCLValue(value);
+      webhookBlock += `\n      "${key}" = ${formattedValue}`;
+    });
+    webhookBlock += '\n    }';
+  }
+
+  // Add optional query parameters
+  if (config.query_parameters && Object.keys(config.query_parameters).length > 0) {
+    webhookBlock += '\n    \n    query_parameters = {';
+    Object.entries(config.query_parameters).forEach(([key, value]) => {
+      const formattedValue = formatHCLValue(value);
+      webhookBlock += `\n      "${key}" = ${formattedValue}`;
+    });
+    webhookBlock += '\n    }';
+  }
+
+  // Add optional template (use heredoc for multiline templates)
+  if (config.template) {
+    webhookBlock += '\n    \n    template = <<-EOT\n';
+    webhookBlock += config.template;
+    webhookBlock += '\nEOT';
+  }
+
+  // Add optional webhook secret
+  if (config.webhook_secret) {
+    const secretValue = formatHCLValue(config.webhook_secret);
+    webhookBlock += `\n    webhook_secret = ${secretValue}`;
+  }
+
+  // Add optional webhook type
+  if (config.webhook_type) {
+    const typeValue = formatHCLValue(config.webhook_type);
+    webhookBlock += `\n    webhook_type = ${typeValue}`;
+  }
+
+  webhookBlock += '\n  }';
+
+  return `resource "checkly_alert_channel" "${def.id}" {
+${webhookBlock}
+
+${generateNotificationFlags(def)}
+}`;
+}
+
+/**
+ * Generate HCL for a phone call alert channel resource
+ *
+ * @param def - Alert channel definition
+ * @returns HCL resource block as a string
+ */
+function generateCallChannelHCL(def: AlertChannelDefinition): string {
+  const config = def.config as CallChannelConfig;
+  const nameValue = formatHCLValue(config.name);
+  const numberValue = formatHCLValue(config.number);
+
+  return `resource "checkly_alert_channel" "${def.id}" {
+  call {
+    name   = ${nameValue}
+    number = ${numberValue}
+  }
+
+${generateNotificationFlags(def)}
 }`;
 }

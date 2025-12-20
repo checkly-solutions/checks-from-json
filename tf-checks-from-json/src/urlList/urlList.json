@@ -1,113 +1,158 @@
-[
-  {
-    "appName": "Env-Observability",
-    "app1": [
-      {
-        "browser_check": [
-          {
-            "filePath": "/browser-scripts/visit.spec.ts",
-            "frequency": 5,
-            "activated": true,
-            "urlShort": "app-userflow"
-          }
-        ],
-        "api_check": [
-          {
-            "url": "https://next-danube-webshop-backend.vercel.app/api/v1/books",
-            "activated": true,
-            "method": "GET",
-            "frequency": 5,
-            "setup": "",
-            "assertions": [["statusCode().equals(200)"]],
-            "urlShort": "service-1"
-          }
-        ],
-        "multi_check": [
-          {
-            "filePath": "/multi-scripts/multi-CRUD.spec.ts",
-            "frequency": 5,
-            "activated": true,
-            "urlShort": "service-2"
-          }
-        ]
+{
+  "alertChannels": [
+    {
+      "id": "email_tier_1",
+      "type": "email",
+      "config": {
+        "address": "var:email_tier_1"
+      },
+      "send_recovery": true,
+      "send_failure": true,
+      "send_degraded": false,
+      "ssl_expiry": true,
+      "ssl_expiry_threshold": 30
+    },
+    {
+      "id": "slack_critical",
+      "type": "slack",
+      "config": {
+        "channel": "#checkly-alerts",
+        "url": "var:slack_webhook_url"
+      },
+      "send_recovery": true,
+      "send_failure": true,
+      "send_degraded": true
+    },
+    {
+      "id": "pagerduty_oncall",
+      "type": "pagerduty",
+      "config": {
+        "service_key": "var:pagerduty_service_key",
+        "account": "MyCompany",
+        "service_name": "Checkly Monitoring"
+      },
+      "send_recovery": false,
+      "send_failure": true,
+      "send_degraded": false
+    }
+  ],
+  "apps": [
+    {
+      "appName": "Env-Observability",
+      "tiers": {
+        "app1": {
+          "alertChannel": "email_tier_1",
+          "checks": [
+            {
+              "browser_check": [
+                {
+                  "filePath": "/browser-scripts/visit.spec.ts",
+                  "frequency": 5,
+                  "activated": true,
+                  "urlShort": "app-userflow"
+                }
+              ],
+              "api_check": [
+                {
+                  "url": "https://next-danube-webshop-backend.vercel.app/api/v1/books",
+                  "activated": true,
+                  "method": "GET",
+                  "frequency": 5,
+                  "setup": "",
+                  "assertions": [["statusCode().equals(200)"]],
+                  "urlShort": "service-1"
+                }
+              ],
+              "multi_check": [
+                {
+                  "filePath": "/multi-scripts/multi-CRUD.spec.ts",
+                  "frequency": 5,
+                  "activated": true,
+                  "urlShort": "service-2"
+                }
+              ]
+            }
+          ]
+        }
       }
-    ],
-    "app2": [],
-    "app3": [],
-    "app4": []
-  },
-  {
-    "appName": "Env-Trust",
-    "app1": [
-      {
-        "browser_check": [
-          {
-            "filePath": "/browser-scripts/visit.spec.ts",
-            "frequency": 5,
-            "activated": true,
-            "urlShort": "app-userflow"
-          }
-        ],
-        "api_check": [
-          {
-            "url": "https://next-danube-webshop-backend.vercel.app/api/v1/books",
-            "activated": true,
-            "method": "GET",
-            "frequency": 5,
-            "setup": "",
-            "assertions": [["statusCode().equals(200)"]],
-            "urlShort": "service-1"
-          }
-        ],
-        "multi_check": [
-          {
-            "filePath": "/multi-scripts/multi-CRUD.spec.ts",
-            "frequency": 5,
-            "activated": true,
-            "urlShort": "service-2"
-          }
-        ]
+    },
+    {
+      "appName": "Env-Trust",
+      "tiers": {
+        "app1": {
+          "alertChannel": "slack_critical",
+          "checks": [
+            {
+              "browser_check": [
+                {
+                  "filePath": "/browser-scripts/visit.spec.ts",
+                  "frequency": 5,
+                  "activated": true,
+                  "urlShort": "app-userflow"
+                }
+              ],
+              "api_check": [
+                {
+                  "url": "https://next-danube-webshop-backend.vercel.app/api/v1/books",
+                  "activated": true,
+                  "method": "GET",
+                  "frequency": 5,
+                  "setup": "",
+                  "assertions": [["statusCode().equals(200)"]],
+                  "urlShort": "service-1"
+                }
+              ],
+              "multi_check": [
+                {
+                  "filePath": "/multi-scripts/multi-CRUD.spec.ts",
+                  "frequency": 5,
+                  "activated": true,
+                  "urlShort": "service-2"
+                }
+              ]
+            }
+          ]
+        }
       }
-    ],
-    "app2": [],
-    "app3": [],
-    "app4": []
-  },
-  {
-    "appName": "Env-Quality",
-    "app1": [
-      {
-        "browser_check": [
-          {
-            "filePath": "/browser-scripts/visit.spec.ts",
-            "frequency": 5,
-            "activated": true,
-            "urlShort": "app-userflow"
-          }
-        ],
-        "api_check": [
-          {
-            "url": "https://next-danube-webshop-backend.vercel.app/api/v1/books",
-            "activated": true,
-            "method": "GET",
-            "frequency": 5,
-            "setup": "",
-            "assertions": [["statusCode().equals(200)"]],
-            "urlShort": "service-1"
-          }
-        ],
-        "multi_check": [
-          {
-            "filePath": "/multi-scripts/multi-CRUD.spec.ts",
-            "frequency": 5,
-            "activated": true,
-            "urlShort": "service-2"
-          }
-        ]
+    },
+    {
+      "appName": "Env-Quality",
+      "tiers": {
+        "app1": {
+          "alertChannel": "pagerduty_oncall",
+          "checks": [
+            {
+              "browser_check": [
+                {
+                  "filePath": "/browser-scripts/visit.spec.ts",
+                  "frequency": 5,
+                  "activated": true,
+                  "urlShort": "app-userflow"
+                }
+              ],
+              "api_check": [
+                {
+                  "url": "https://next-danube-webshop-backend.vercel.app/api/v1/books",
+                  "activated": true,
+                  "method": "GET",
+                  "frequency": 5,
+                  "setup": "",
+                  "assertions": [["statusCode().equals(200)"]],
+                  "urlShort": "service-1"
+                }
+              ],
+              "multi_check": [
+                {
+                  "filePath": "/multi-scripts/multi-CRUD.spec.ts",
+                  "frequency": 5,
+                  "activated": true,
+                  "urlShort": "service-2"
+                }
+              ]
+            }
+          ]
+        }
       }
-    ],
-    "app2": [],
-    "app3": [],
-    "app4": []
-  }
-]
+    }
+  ]
+}

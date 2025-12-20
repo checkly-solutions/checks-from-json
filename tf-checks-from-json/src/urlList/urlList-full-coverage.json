@@ -1,0 +1,403 @@
+{
+  "global_environment_variables": [
+    {
+      "key": "GLOBAL_API_BASE_URL",
+      "value": "https://api.example.com",
+      "locked": true
+    },
+    {
+      "key": "GLOBAL_SECRET_KEY",
+      "value": "var:global_secret",
+      "locked": true,
+      "secret": true
+    }
+  ],
+  "snippets": [
+    {
+      "id": "auth_setup",
+      "name": "Authentication Setup",
+      "script": "/snippets/auth-setup.js"
+    },
+    {
+      "id": "cleanup_teardown",
+      "name": "Cleanup Teardown",
+      "script": "/snippets/cleanup.js"
+    }
+  ],
+  "alertChannels": [
+    {
+      "id": "production_email",
+      "type": "email",
+      "send_degraded": true,
+      "send_failure": true,
+      "send_recovery": true,
+      "ssl_expiry": true,
+      "ssl_expiry_threshold": 14,
+      "config": {
+        "address": "prod-alerts@example.com"
+      }
+    },
+    {
+      "id": "production_slack",
+      "type": "slack",
+      "send_degraded": true,
+      "send_failure": true,
+      "send_recovery": true,
+      "config": {
+        "channel": "#production-alerts",
+        "url": "var:slack_webhook_url"
+      }
+    },
+    {
+      "id": "production_pagerduty",
+      "type": "pagerduty",
+      "send_failure": true,
+      "send_recovery": true,
+      "config": {
+        "service_key": "var:pagerduty_key",
+        "account": "my-company"
+      }
+    },
+    {
+      "id": "staging_email",
+      "type": "email",
+      "send_failure": true,
+      "send_recovery": true,
+      "config": {
+        "address": "staging-alerts@example.com"
+      }
+    }
+  ],
+  "apps": [
+    {
+      "appName": "Full-Coverage-Demo",
+      "dashboard": {
+        "custom_url": "full-coverage-demo",
+        "header": "Full Coverage Monitoring Dashboard",
+        "description": "Comprehensive monitoring dashboard showcasing all Terraform configurations",
+        "logo": "https://example.com/logo.png",
+        "refresh_rate": 60,
+        "width": "FULL",
+        "show_header": true,
+        "show_p95": true,
+        "show_p99": true,
+        "show_check_run_links": true,
+        "expand_checks": false,
+        "paginate": true,
+        "pagination_rate": 60,
+        "checks_per_page": 10,
+        "use_tags_and_operator": false,
+        "hide_tags": false,
+        "is_private": false,
+        "enable_incidents": true,
+        "custom_css": "body { font-family: monospace; }",
+        "link": "https://example.com/monitoring"
+      },
+      "tiers": {
+        "production": {
+          "alertChannel": "production_pagerduty",
+          "locations": ["us-east-1", "eu-west-1", "ap-southeast-1"],
+          "concurrency": 50,
+          "runtime_id": "2023.09",
+          "run_parallel": false,
+          "muted": false,
+          "tags": ["production", "critical"],
+          "use_global_alert_settings": false,
+          "alert_settings": {
+            "escalation_type": "RUN_BASED",
+            "run_based_escalation": {
+              "failed_run_threshold": 2
+            },
+            "reminders": {
+              "amount": 2,
+              "interval": 15
+            },
+            "parallel_run_failure_threshold": {
+              "enabled": true,
+              "percentage": 30
+            }
+          },
+          "retry_strategy": {
+            "type": "EXPONENTIAL",
+            "base_backoff_seconds": 30,
+            "max_duration_seconds": 600,
+            "max_retries": 5,
+            "same_region": true
+          },
+          "environment_variables": [
+            {
+              "key": "ENV",
+              "value": "production",
+              "locked": true
+            },
+            {
+              "key": "API_KEY",
+              "value": "var:prod_api_key",
+              "locked": true,
+              "secret": true
+            }
+          ],
+          "api_check_defaults": {
+            "headers": {
+              "X-Environment": "production",
+              "X-Client": "checkly-monitoring"
+            },
+            "query_parameters": {
+              "version": "v1"
+            }
+          },
+          "checks": [
+            {
+              "api_check": [
+                {
+                  "url": "https://api.example.com/health",
+                  "method": "GET",
+                  "urlShort": "api-health",
+                  "frequency": 1,
+                  "activated": true,
+                  "degraded_response_time": 3000,
+                  "max_response_time": 10000,
+                  "headers": {
+                    "Authorization": "var:api_token",
+                    "Accept": "application/json"
+                  },
+                  "query_parameters": {
+                    "detailed": "true"
+                  },
+                  "assertions": [
+                    {
+                      "statusCode": {
+                        "lessThan": 400
+                      }
+                    },
+                    {
+                      "jsonBody": {
+                        "hasKey": "status"
+                      }
+                    },
+                    {
+                      "jsonBody": {
+                        "equals": "healthy",
+                        "property": "status"
+                      }
+                    }
+                  ],
+                  "ip_family": "IPv4",
+                  "follow_redirects": true,
+                  "skip_ssl": false,
+                  "ssl_check_domain": "api.example.com",
+                  "group_order": 1,
+                  "alert_settings": {
+                    "escalation_type": "TIME_BASED",
+                    "time_based_escalation": {
+                      "minutes_failing_threshold": 5
+                    }
+                  }
+                },
+                {
+                  "url": "https://api.example.com/users",
+                  "method": "POST",
+                  "urlShort": "api-create-user",
+                  "frequency": 5,
+                  "activated": true,
+                  "basic_auth": {
+                    "username": "var:api_user",
+                    "password": "var:api_pass"
+                  },
+                  "body": "{\"name\": \"Test User\", \"email\": \"test@example.com\"}",
+                  "body_type": "JSON",
+                  "headers": {
+                    "Content-Type": "application/json"
+                  },
+                  "assertions": [
+                    {
+                      "statusCode": {
+                        "equals": 201
+                      }
+                    }
+                  ],
+                  "retry_strategy": {
+                    "type": "FIXED",
+                    "base_backoff_seconds": 60,
+                    "max_retries": 3
+                  },
+                  "setup_snippet_id": "auth_setup",
+                  "teardown_snippet_id": "cleanup_teardown",
+                  "group_order": 2
+                }
+              ]
+            },
+            {
+              "browser_check": [
+                {
+                  "filePath": "/browser-scripts/user-flow.spec.ts",
+                  "frequency": 5,
+                  "activated": true,
+                  "urlShort": "user-registration-flow",
+                  "degraded_response_time": 15000,
+                  "max_response_time": 30000,
+                  "runtime_id": "2023.09",
+                  "setup_snippet_id": "auth_setup",
+                  "teardown_snippet_id": "cleanup_teardown",
+                  "environment_variables": [
+                    {
+                      "key": "TEST_EMAIL",
+                      "value": "test@example.com"
+                    }
+                  ],
+                  "group_order": 10
+                }
+              ]
+            },
+            {
+              "multi_check": [
+                {
+                  "filePath": "/multi-scripts/api-workflow.spec.ts",
+                  "frequency": 10,
+                  "activated": true,
+                  "urlShort": "complete-api-workflow",
+                  "degraded_response_time": 20000,
+                  "max_response_time": 40000,
+                  "setup_snippet_id": "auth_setup",
+                  "teardown_snippet_id": "cleanup_teardown",
+                  "group_order": 20
+                }
+              ]
+            },
+            {
+              "url_monitor": [
+                {
+                  "name": "Homepage Uptime",
+                  "url": "https://example.com",
+                  "frequency": 1,
+                  "activated": true,
+                  "degraded_response_time": 2000,
+                  "max_response_time": 5000,
+                  "follow_redirects": true,
+                  "skip_ssl": false,
+                  "ip_family": "IPv4",
+                  "locations": ["us-east-1", "eu-west-1"]
+                }
+              ]
+            },
+            {
+              "tcp_monitor": [
+                {
+                  "name": "Database Connection",
+                  "hostname": "db.example.com",
+                  "port": 5432,
+                  "frequency": 1,
+                  "activated": true,
+                  "data": "PING\\n",
+                  "degraded_response_time": 500,
+                  "max_response_time": 2000,
+                  "ip_family": "IPv4"
+                },
+                {
+                  "name": "Redis Connection",
+                  "hostname": "redis.example.com",
+                  "port": 6379,
+                  "frequency": 1,
+                  "activated": true,
+                  "degraded_response_time": 300,
+                  "max_response_time": 1000
+                }
+              ]
+            },
+            {
+              "dns_monitor": [
+                {
+                  "name": "DNS A Record",
+                  "query": "example.com",
+                  "record_type": "A",
+                  "frequency": 5,
+                  "activated": true,
+                  "degraded_response_time": 500,
+                  "max_response_time": 2000,
+                  "protocol": "UDP"
+                },
+                {
+                  "name": "DNS MX Record",
+                  "query": "example.com",
+                  "record_type": "MX",
+                  "frequency": 10,
+                  "activated": true,
+                  "name_server": "8.8.8.8:53"
+                }
+              ]
+            },
+            {
+              "heartbeat_monitor": [
+                {
+                  "name": "Daily Backup Job",
+                  "period": 1,
+                  "period_unit": "day",
+                  "grace": 30,
+                  "grace_unit": "minute",
+                  "activated": true,
+                  "alert_settings": {
+                    "escalation_type": "RUN_BASED",
+                    "run_based_escalation": {
+                      "failed_run_threshold": 1
+                    }
+                  }
+                },
+                {
+                  "name": "Hourly Data Sync",
+                  "period": 1,
+                  "period_unit": "hour",
+                  "grace": 15,
+                  "grace_unit": "minute",
+                  "activated": true,
+                  "muted": false
+                }
+              ]
+            }
+          ]
+        },
+        "staging": {
+          "alertChannel": "staging_email",
+          "locations": ["us-east-1"],
+          "concurrency": 100,
+          "muted": false,
+          "alert_settings": {
+            "escalation_type": "RUN_BASED",
+            "run_based_escalation": {
+              "failed_run_threshold": 3
+            }
+          },
+          "checks": [
+            {
+              "api_check": [
+                {
+                  "url": "https://staging-api.example.com/health",
+                  "method": "GET",
+                  "urlShort": "staging-health",
+                  "frequency": 5,
+                  "activated": true,
+                  "assertions": [
+                    {
+                      "statusCode": {
+                        "lessThan": 500
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "url_monitor": [
+                {
+                  "name": "Staging Homepage",
+                  "url": "https://staging.example.com",
+                  "frequency": 5,
+                  "activated": true
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  ]
+}
