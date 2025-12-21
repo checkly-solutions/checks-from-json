@@ -40,7 +40,9 @@ npm install
 ### Example Project Files
 * Full Coverage Example:
   * [src/urlList/urlList-full-coverage.json](src/urlList/urlList-full-coverage.json) - See [Full Coverage Readme](src/urlList/README-FULL-COVERAGE.md)
+* Checkly Docs Example:
   * [src/urlList/checkly-docs-example.json](src/urlList/checkly-docs-example.json) - Simple setup to monitor the Checkly docs as of Dec 21, 2025.
+* Generic, Simple Example:
   * [src/urlList/urlList.json](src/urlList/urlList.json) - Simple example
 
 ### Generate Terraform Files
