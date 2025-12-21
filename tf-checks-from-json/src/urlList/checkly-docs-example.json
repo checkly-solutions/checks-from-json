@@ -1,0 +1,260 @@
+{
+  "alertChannels": [
+    {
+      "id": "docs_email_alerts",
+      "type": "email",
+      "send_degraded": true,
+      "send_failure": true,
+      "send_recovery": true,
+      "ssl_expiry": true,
+      "ssl_expiry_threshold": 14,
+      "config": {
+        "address": "var:alert_email"
+      }
+    }
+  ],
+  "apps": [
+    {
+      "appName": "Checkly-Docs-Monitoring",
+      "dashboard": {
+        "custom_url": "checkly-docs-health",
+        "header": "Checkly Documentation Health Dashboard",
+        "description": "Real-time monitoring status for the Checkly documentation website",
+        "logo": "https://www.checklyhq.com/images/checkly-logo.svg",
+        "refresh_rate": 60,
+        "width": "FULL",
+        "show_header": true,
+        "show_p95": true,
+        "show_p99": true,
+        "paginate": true,
+        "pagination_rate": 60,
+        "checks_per_page": 10,
+        "is_private": false,
+        "enable_incidents": true
+      },
+      "tiers": {
+        "critical_docs": {
+          "alertChannel": "docs_email_alerts",
+          "locations": ["us-east-1", "eu-west-1", "ap-southeast-1"],
+          "concurrency": 50,
+          "runtime_id": "2023.09",
+          "tags": ["critical", "docs", "tier1"],
+          "alert_settings": {
+            "escalation_type": "RUN_BASED",
+            "run_based_escalation": {
+              "failed_run_threshold": 1
+            },
+            "reminders": {
+              "amount": 3,
+              "interval": 5
+            }
+          },
+          "retry_strategy": {
+            "type": "EXPONENTIAL",
+            "base_backoff_seconds": 30,
+            "max_duration_seconds": 300,
+            "max_retries": 3,
+            "same_region": true
+          },
+          "environment_variables": [
+            {
+              "key": "MONITORING_TIER",
+              "value": "critical",
+              "locked": true
+            }
+          ],
+          "checks": [
+            {
+              "url_monitor": [
+                {
+                  "name": "Docs Homepage",
+                  "url": "https://checklyhq.com/docs",
+                  "frequency": 1,
+                  "activated": true,
+                  "degraded_response_time": 2000,
+                  "max_response_time": 5000
+                }
+              ]
+            },
+            {
+              "api_check": [
+                {
+                  "url": "https://checklyhq.com/docs/what-is-checkly",
+                  "method": "GET",
+                  "urlShort": "what-is-checkly",
+                  "frequency": 2,
+                  "activated": true,
+                  "degraded_response_time": 3000,
+                  "max_response_time": 8000,
+                  "assertions": [
+                    {
+                      "statusCode": {
+                        "lessThan": 400
+                      }
+                    },
+                    {
+                      "textBody": {
+                        "contains": "Checkly"
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "browser_check": [
+                {
+                  "filePath": "/browser-scripts/checkly-docs-browser-quickstart.spec.ts",
+                  "frequency": 5,
+                  "activated": true,
+                  "urlShort": "browser-quickstart-guide",
+                  "degraded_response_time": 10000,
+                  "max_response_time": 20000,
+                  "runtime_id": "2023.09",
+                  "ssl_check_domain": "checklyhq.com"
+                }
+              ]
+            }
+          ]
+        },
+        "important_docs": {
+          "alertChannel": "docs_email_alerts",
+          "locations": ["us-east-1", "eu-west-1"],
+          "concurrency": 100,
+          "tags": ["important", "docs", "tier2"],
+          "alert_settings": {
+            "escalation_type": "RUN_BASED",
+            "run_based_escalation": {
+              "failed_run_threshold": 2
+            },
+            "reminders": {
+              "amount": 2,
+              "interval": 10
+            }
+          },
+          "retry_strategy": {
+            "type": "FIXED",
+            "base_backoff_seconds": 60,
+            "max_retries": 2
+          },
+          "checks": [
+            {
+              "url_monitor": [
+                {
+                  "name": "Detect Overview",
+                  "url": "https://checklyhq.com/docs/detect/overview",
+                  "frequency": 5,
+                  "activated": true,
+                  "degraded_response_time": 2000,
+                  "max_response_time": 5000
+                }
+              ]
+            },
+            {
+              "api_check": [
+                {
+                  "url": "https://checklyhq.com/docs/api-reference/authentication",
+                  "method": "GET",
+                  "urlShort": "api-auth-docs",
+                  "frequency": 5,
+                  "activated": true,
+                  "degraded_response_time": 3000,
+                  "max_response_time": 8000,
+                  "assertions": [
+                    {
+                      "statusCode": {
+                        "lessThan": 400
+                      }
+                    }
+                  ]
+                },
+                {
+                  "url": "https://checklyhq.com/docs/cli/overview",
+                  "method": "GET",
+                  "urlShort": "cli-overview",
+                  "frequency": 10,
+                  "activated": true,
+                  "degraded_response_time": 3000,
+                  "max_response_time": 8000,
+                  "assertions": [
+                    {
+                      "statusCode": {
+                        "equals": 200
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        "advanced_docs": {
+          "alertChannel": "docs_email_alerts",
+          "locations": ["us-east-1"],
+          "concurrency": 100,
+          "tags": ["advanced", "docs", "tier3"],
+          "alert_settings": {
+            "escalation_type": "TIME_BASED",
+            "time_based_escalation": {
+              "minutes_failing_threshold": 10
+            },
+            "reminders": {
+              "amount": 1,
+              "interval": 30
+            }
+          },
+          "checks": [
+            {
+              "url_monitor": [
+                {
+                  "name": "Resolve Overview",
+                  "url": "https://checklyhq.com/docs/resolve/overview",
+                  "frequency": 10,
+                  "activated": true,
+                  "degraded_response_time": 2000,
+                  "max_response_time": 5000
+                }
+              ]
+            },
+            {
+              "api_check": [
+                {
+                  "url": "https://checklyhq.com/docs/integrations/overview",
+                  "method": "GET",
+                  "urlShort": "integrations-overview",
+                  "frequency": 15,
+                  "activated": true,
+                  "degraded_response_time": 3000,
+                  "max_response_time": 8000,
+                  "assertions": [
+                    {
+                      "statusCode": {
+                        "lessThan": 400
+                      }
+                    }
+                  ]
+                },
+                {
+                  "url": "https://checklyhq.com/docs/learn/playwright/overview",
+                  "method": "GET",
+                  "urlShort": "playwright-learn",
+                  "frequency": 15,
+                  "activated": true,
+                  "degraded_response_time": 3000,
+                  "max_response_time": 8000,
+                  "assertions": [
+                    {
+                      "statusCode": {
+                        "equals": 200
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  ]
+}
