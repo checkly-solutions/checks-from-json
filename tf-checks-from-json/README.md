@@ -719,10 +719,6 @@ Common validation errors and solutions:
 
 Run `npx tsc --noEmit` to see detailed type errors.
 
-## License
-
-ISC
-
 ## Contributing
 
 When contributing:
