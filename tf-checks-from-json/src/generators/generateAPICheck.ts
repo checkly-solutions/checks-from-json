@@ -6,6 +6,7 @@
 import { ApiCheckConfig, UrlListConfig } from '../types/json-types';
 import { sanitizeResourceId } from '../utils/sanitizeResourceId';
 import { parseAssertion } from '../utils/parseAssertions';
+import { parseAssertionObject } from '../utils/parseAssertionsObject';
 import { mapAssertionToTerraform, generateAssertionBlock } from '../utils/assertionMapper';
 import { formatHCLList, formatHCLBool, formatHCLMap, wrapHeredoc } from '../utils/formatHCL';
 import { readScript } from '../utils/fileUtils';
@@ -19,27 +20,57 @@ import {
   DEFAULT_DEGRADED_RESPONSE_TIME,
   DEFAULT_MAX_RESPONSE_TIME,
   DEFAULT_RUNTIME_ID,
+  MAX_RESPONSE_TIME_HTTP,
+  VALID_FREQUENCY_VALUES,
 } from '../config/constants';
+import {
+  validateAlertSettings,
+  validateRetryStrategy,
+  validateEnvironmentVariables,
+} from '../utils/validation';
 
 /**
  * Generate HCL for an API check resource
  *
+ * Supports both CLI string-based and object-based assertion formats:
+ * - CLI format: [["statusCode().equals(200)"]]
+ * - Object format: { "statusCode": { "equals": 200 } }
+ *
+ * Validates all configurations against Checkly Terraform provider constraints including:
+ * - Frequency values (0, 1, 2, 5, 10, 15, 30, 60, 120, 180, 360, 720, 1440 minutes)
+ * - Response times (0-30000ms for HTTP-based checks)
+ * - Alert settings (escalation types, thresholds, reminders)
+ * - Retry strategies (types, max retries, backoff durations)
+ *
  * @param app - The application configuration object
- * @param tier - The tier name (app1, app2, app3, or app4)
+ * @param tier - The tier name (e.g., "production", "staging")
  * @param check - The API check configuration
  * @param groupResourceId - The Terraform resource ID of the parent group
  * @returns HCL resource block as a string
  *
  * @example
- * generateAPICheck(app, "app1", {
+ * // With CLI format assertions
+ * generateAPICheck(app, "production", {
  *   url: "https://api.example.com/health",
  *   method: "GET",
  *   frequency: 5,
  *   activated: true,
- *   urlShort: "service-1",
+ *   urlShort: "service-health",
  *   assertions: [["statusCode().equals(200)"]],
  *   headers: [{ "Authorization": "Bearer token" }]
- * }, "env_observability_app1_group")
+ * }, "app_production_group")
+ *
+ * @example
+ * // With object format assertions
+ * generateAPICheck(app, "production", {
+ *   url: "https://api.example.com/health",
+ *   method: "GET",
+ *   frequency: 5,
+ *   activated: true,
+ *   urlShort: "service-health",
+ *   assertions: [{ "statusCode": { "lessThan": 400 } }],
+ *   headers: [{ "Authorization": "var:api_token" }]
+ * }, "app_production_group")
  */
 export function generateAPICheck(
   app: UrlListConfig,
@@ -60,12 +91,60 @@ export function generateAPICheck(
   const tags = ['API', sanitizedAppName, tier, 'cli'];
   const tagsHCL = formatHCLList(tags);
 
-  // Parse and map assertions
+  // Validate configuration
+  // Frequency validation
+  if (!VALID_FREQUENCY_VALUES.includes(check.frequency)) {
+    throw new Error(
+      `API Check "${check.urlShort}": Invalid frequency ${check.frequency}. Must be one of: ${VALID_FREQUENCY_VALUES.join(', ')}`
+    );
+  }
+
+  // Response time validation
+  const degradedTime = check.degraded_response_time ?? DEFAULT_DEGRADED_RESPONSE_TIME;
+  const maxTime = check.max_response_time ?? DEFAULT_MAX_RESPONSE_TIME;
+
+  if (degradedTime < 0 || degradedTime > MAX_RESPONSE_TIME_HTTP) {
+    throw new Error(
+      `API Check "${check.urlShort}": degraded_response_time must be 0-${MAX_RESPONSE_TIME_HTTP}ms, got ${degradedTime}`
+    );
+  }
+  if (maxTime < 0 || maxTime > MAX_RESPONSE_TIME_HTTP) {
+    throw new Error(
+      `API Check "${check.urlShort}": max_response_time must be 0-${MAX_RESPONSE_TIME_HTTP}ms, got ${maxTime}`
+    );
+  }
+  if (degradedTime > maxTime) {
+    throw new Error(
+      `API Check "${check.urlShort}": degraded_response_time (${degradedTime}) cannot exceed max_response_time (${maxTime})`
+    );
+  }
+
+  // Validate optional configurations
+  if (check.alert_settings) {
+    validateAlertSettings(check.alert_settings, `API Check "${check.urlShort}"`);
+  }
+  if (check.retry_strategy) {
+    validateRetryStrategy(check.retry_strategy, `API Check "${check.urlShort}"`);
+  }
+  if (check.environment_variables) {
+    validateEnvironmentVariables(check.environment_variables, `API Check "${check.urlShort}"`);
+  }
+
+  // Parse and map assertions - support both CLI string format and object format
   const assertionsHCL = check.assertions
-    .map((assertionArray) => {
-      const assertionString = assertionArray[0];
-      const parsed = parseAssertion(assertionString);
-      const mapped = mapAssertionToTerraform(parsed);
+    .map((assertionItem) => {
+      let mapped;
+
+      // Support both formats: string array (CLI) and object (new format)
+      if (Array.isArray(assertionItem) && typeof assertionItem[0] === 'string') {
+        // CLI format: [["statusCode().equals(200)"]]
+        const parsed = parseAssertion(assertionItem[0]);
+        mapped = mapAssertionToTerraform(parsed);
+      } else {
+        // Object format: { "statusCode": { "equals": 200 } }
+        mapped = parseAssertionObject(assertionItem);
+      }
+
       return generateAssertionBlock(mapped, 4);
     })
     .join('\n\n');
@@ -137,10 +216,6 @@ export function generateAPICheck(
 
   // Get shouldFail flag (default to false)
   const shouldFail = check.shouldFail !== undefined ? check.shouldFail : false;
-
-  // Get response time thresholds (with defaults)
-  const degradedTime = check.degraded_response_time ?? DEFAULT_DEGRADED_RESPONSE_TIME;
-  const maxTime = check.max_response_time ?? DEFAULT_MAX_RESPONSE_TIME;
 
   // Get runtime_id if present
   const runtimeId = check.runtime_id ?? DEFAULT_RUNTIME_ID;

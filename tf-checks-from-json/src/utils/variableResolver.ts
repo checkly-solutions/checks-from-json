@@ -3,7 +3,11 @@
  * Supports both literal values and variable references using the "var:variable_name" pattern
  */
 
-import { AlertChannelDefinition } from '../types/json-types';
+import {
+  AlertChannelDefinition,
+  UrlListConfig,
+  EnvironmentVariable,
+} from '../types/json-types';
 
 /**
  * Check if a value is a Terraform variable reference
@@ -97,27 +101,110 @@ export function formatHCLValue(value: string): string {
 }
 
 /**
- * Collect all variable references from alert channel definitions
- * Recursively scans configuration objects for "var:*" references
+ * Collect all variable references from configuration
+ * Recursively scans alert channels, global env vars, apps, tiers, and checks for "var:*" references
  *
  * @param alertChannels - Array of alert channel definitions
+ * @param apps - Array of application configurations
+ * @param globalEnvVars - Optional array of global environment variables
  * @returns Set of unique variable names (without "var:" prefix)
  *
  * @example
- * collectVariableReferences([
- *   { id: "email", type: "email", config: { address: "var:email_addr" } },
- *   { id: "slack", type: "slack", config: { url: "var:slack_url" } }
- * ])
- * // Returns Set { "email_addr", "slack_url" }
+ * collectVariableReferences(
+ *   [{ id: "email", type: "email", config: { address: "var:email_addr" } }],
+ *   [{ appName: "My App", tiers: { production: { ... } } }],
+ *   [{ key: "API_KEY", value: "var:api_key" }]
+ * )
+ * // Returns Set { "email_addr", "api_key", ... }
  */
 export function collectVariableReferences(
-  alertChannels: AlertChannelDefinition[]
+  alertChannels: AlertChannelDefinition[],
+  apps: UrlListConfig[],
+  globalEnvVars?: EnvironmentVariable[]
 ): Set<string> {
   const vars = new Set<string>();
 
+  // Scan alert channels
   alertChannels.forEach((channel) => {
-    // Scan the config object for variable references
     scanObjectForVariables(channel.config, vars);
+  });
+
+  // Scan global environment variables
+  if (globalEnvVars) {
+    globalEnvVars.forEach((envVar) => {
+      if (isVariableReference(envVar.value)) {
+        try {
+          vars.add(extractVariableName(envVar.value));
+        } catch (error) {
+          // Skip malformed references
+        }
+      }
+    });
+  }
+
+  // Scan apps and their tiers
+  apps.forEach((app) => {
+    if (app.tiers) {
+      Object.values(app.tiers).forEach((tierDef) => {
+        // Scan tier-level environment variables
+        if (tierDef.environment_variables) {
+          tierDef.environment_variables.forEach((envVar) => {
+            if (isVariableReference(envVar.value)) {
+              try {
+                vars.add(extractVariableName(envVar.value));
+              } catch (error) {
+                // Skip malformed references
+              }
+            }
+          });
+        }
+
+        // Scan tier-level API check defaults
+        if (tierDef.api_check_defaults) {
+          scanObjectForVariables(tierDef.api_check_defaults, vars);
+        }
+
+        // Scan all checks in the tier
+        if (tierDef.checks) {
+          tierDef.checks.forEach((checkCategory) => {
+            // Scan each check type (api_check, browser_check, etc.)
+            Object.values(checkCategory).forEach((checksArray: any) => {
+              if (Array.isArray(checksArray)) {
+                checksArray.forEach((check) => {
+                  // Scan check-level headers
+                  if (check.headers) {
+                    scanObjectForVariables(check.headers, vars);
+                  }
+
+                  // Scan check-level query parameters
+                  if (check.query_parameters) {
+                    scanObjectForVariables(check.query_parameters, vars);
+                  }
+
+                  // Scan check-level basic auth
+                  if (check.basic_auth) {
+                    scanObjectForVariables(check.basic_auth, vars);
+                  }
+
+                  // Scan check-level environment variables
+                  if (check.environment_variables) {
+                    check.environment_variables.forEach((envVar: EnvironmentVariable) => {
+                      if (isVariableReference(envVar.value)) {
+                        try {
+                          vars.add(extractVariableName(envVar.value));
+                        } catch (error) {
+                          // Skip malformed references
+                        }
+                      }
+                    });
+                  }
+                });
+              }
+            });
+          });
+        }
+      });
+    }
   });
 
   return vars;

@@ -34,7 +34,28 @@
       "ssl_expiry": true,
       "ssl_expiry_threshold": 14,
       "config": {
-        "address": "braxton+prod-alerts@checklyhq.com"
+        "address": "prod-alerts@example.com"
+      }
+    },
+    {
+      "id": "production_slack",
+      "type": "slack",
+      "send_degraded": true,
+      "send_failure": true,
+      "send_recovery": true,
+      "config": {
+        "channel": "#production-alerts",
+        "url": "var:slack_webhook_url"
+      }
+    },
+    {
+      "id": "production_pagerduty",
+      "type": "pagerduty",
+      "send_failure": true,
+      "send_recovery": true,
+      "config": {
+        "service_key": "var:pagerduty_key",
+        "account": "my-company"
       }
     },
     {
@@ -43,7 +64,7 @@
       "send_failure": true,
       "send_recovery": true,
       "config": {
-        "address": "braxton+staging-alerts@checklyhq.com"
+        "address": "staging-alerts@example.com"
       }
     }
   ],
@@ -74,7 +95,7 @@
       },
       "tiers": {
         "production": {
-          "alertChannel": "production_email",
+          "alertChannel": "production_pagerduty",
           "locations": ["us-east-1", "eu-west-1", "ap-southeast-1"],
           "concurrency": 50,
           "runtime_id": "2023.09",
@@ -117,7 +138,6 @@
             }
           ],
           "api_check_defaults": {
-            "url": "https://api.example.com",
             "headers": {
               "X-Environment": "production",
               "X-Client": "checkly-monitoring"
@@ -311,9 +331,9 @@
                 {
                   "name": "Daily Backup Job",
                   "period": 1,
-                  "period_unit": "days",
+                  "period_unit": "day",
                   "grace": 30,
-                  "grace_unit": "minutes",
+                  "grace_unit": "minute",
                   "activated": true,
                   "alert_settings": {
                     "escalation_type": "RUN_BASED",
@@ -325,9 +345,9 @@
                 {
                   "name": "Hourly Data Sync",
                   "period": 1,
-                  "period_unit": "hours",
+                  "period_unit": "hour",
                   "grace": 15,
-                  "grace_unit": "minutes",
+                  "grace_unit": "minute",
                   "activated": true,
                   "muted": false
                 }

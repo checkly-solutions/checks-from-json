@@ -13,9 +13,10 @@ The tool processes `urlList.json` and generates:
 - **Terraform Boilerplate**: `terraform.tf`, `variables.tf`, `provider.tf`
 - **Alert Channels**: All 7 Checkly alert channel types (Email, SMS, Slack, PagerDuty, Opsgenie, Webhook, Phone Call)
 - **Check Groups**: Organized by application and tier with alert channel subscriptions
-- **Monitoring Checks**: API checks, browser checks, and multi-step checks
-- **Dashboards**: Per-application monitoring dashboards
-- **Dynamic Variables**: Automatically generates Terraform variables for sensitive alert channel values
+- **Monitoring Checks**: API checks, browser checks, multi-step checks, URL monitors, TCP monitors, DNS monitors, and heartbeat monitors
+- **Global Resources**: Global environment variables and reusable code snippets
+- **Dashboards**: Per-application monitoring dashboards with comprehensive configuration
+- **Dynamic Variables**: Automatically generates Terraform variables for all `var:` references across the entire configuration
 
 ## Prerequisites
 
@@ -181,8 +182,126 @@ The tool expects `src/urlList/urlList.json` with this structure:
 
 #### Check Types
 - **browser_check**: Playwright browser checks
-- **api_check**: HTTP API endpoint checks
+- **api_check**: HTTP API endpoint checks with assertions
 - **multi_check**: Multi-step API workflow checks
+- **url_monitor**: Simple HTTP uptime monitoring
+- **tcp_monitor**: TCP port connectivity monitoring
+- **dns_monitor**: DNS resolution and record validation monitoring
+- **heartbeat_monitor**: Cron job and background service monitoring (via inbound pings)
+
+## API Check Assertions
+
+API checks support **two assertion formats**: object-based (recommended) and CLI string-based (legacy). Both generate identical Terraform resources.
+
+### Object-Based Assertions (Recommended)
+
+The modern, structured format with better readability and IDE support:
+
+```json
+{
+  "url": "https://api.example.com/health",
+  "method": "GET",
+  "assertions": [
+    {
+      "statusCode": {
+        "lessThan": 400
+      }
+    },
+    {
+      "jsonBody": {
+        "hasKey": "status"
+      }
+    },
+    {
+      "jsonBody": {
+        "equals": "healthy",
+        "property": "status"
+      }
+    }
+  ]
+}
+```
+
+### CLI String-Based Assertions (Legacy)
+
+The original format using method chaining syntax:
+
+```json
+{
+  "url": "https://api.example.com/health",
+  "method": "GET",
+  "assertions": [
+    ["statusCode().lessThan(400)"],
+    ["jsonBody().hasKey('status')"],
+    ["jsonBody('status').equals('healthy')"]
+  ]
+}
+```
+
+Both formats generate the same Terraform HCL:
+
+```hcl
+assertion {
+  source     = "STATUS_CODE"
+  comparison = "LESS_THAN"
+  target     = "400"
+}
+
+assertion {
+  source     = "JSON_BODY"
+  comparison = "HAS_KEY"
+  target     = "status"
+}
+
+assertion {
+  source     = "JSON_BODY"
+  property   = "status"
+  comparison = "EQUALS"
+  target     = "healthy"
+}
+```
+
+### Supported Assertion Sources
+
+- **statusCode**: HTTP response status code
+- **jsonBody**: JSON response body (with optional `property` for JSON path)
+- **textBody**: Plain text response body
+- **headers**: HTTP response headers
+- **responseTime**: Response time in milliseconds
+
+### Supported Assertion Comparisons
+
+- **equals**, **notEquals**: Exact equality
+- **contains**, **notContains**: String/array containment
+- **greaterThan**, **lessThan**: Numeric comparison
+- **greaterThanOrEqual**, **lessThanOrEqual**: Numeric comparison with equality
+- **hasKey**, **notHasKey**: Object property existence (for JSON bodies)
+- **hasValue**, **notHasValue**: Array/object value existence
+- **isEmpty**, **notEmpty**: Empty check for strings/arrays/objects
+- **isNull**, **notNull**: Null value check
+
+### Assertion Examples
+
+```json
+// Status code validation
+{ "statusCode": { "equals": 200 } }
+{ "statusCode": { "lessThan": 400 } }
+
+// JSON body validation
+{ "jsonBody": { "hasKey": "data" } }
+{ "jsonBody": { "equals": "success", "property": "status" } }
+{ "jsonBody": { "contains": "user", "property": "data.name" } }
+
+// Header validation
+{ "headers": { "hasKey": "Content-Type" } }
+{ "headers": { "contains": "application/json", "property": "Content-Type" } }
+
+// Response time validation
+{ "responseTime": { "lessThan": 1000 } }
+
+// Text body validation
+{ "textBody": { "contains": "Welcome" } }
+```
 
 ## Alert Channels
 
@@ -190,15 +309,32 @@ All alert channel configuration is defined in the `alertChannels` array at the t
 
 ### Variable References
 
-Use the `"var:variable_name"` pattern to reference Terraform variables for sensitive values:
+Use the `"var:variable_name"` pattern to reference Terraform variables for sensitive values anywhere in your configuration:
 
 - **Variable Reference**: `"var:email_address"` → generates `var.email_address` in HCL
 - **Literal Value**: `"#slack-channel"` → generates `"#slack-channel"` in HCL
 
 The tool automatically:
-1. Scans all alert channel configurations for `var:*` references
-2. Generates corresponding Terraform variable definitions in `variables.tf`
-3. Marks all variables as `sensitive = true`
+1. **Comprehensively scans** for `var:*` references in:
+   - Alert channel configurations
+   - Global environment variables
+   - Tier-level environment variables
+   - Tier-level API check defaults (headers, query_parameters, basic_auth)
+   - Check-level headers, query_parameters, basic_auth
+   - Check-level environment variables
+2. **Generates** corresponding Terraform variable definitions in `variables.tf`
+3. **Marks** all variables as `sensitive = true` to hide values in Terraform output
+4. **Deduplicates** variable names (same variable can be referenced multiple times)
+
+**Example**: A variable `var:api_key` used in both a global environment variable and an API check header will generate a single variable definition:
+
+```hcl
+variable "api_key" {
+  type        = string
+  description = "Dynamically generated from var:api_key reference"
+  sensitive   = true
+}
+```
 
 ### Supported Channel Types
 
@@ -384,6 +520,62 @@ __tf_checks__/
 - Check group resources with `alert_channel_subscription` blocks
 - References to alert channels defined in `alert-channels.tf`
 
+## Configuration Validation
+
+The tool performs **comprehensive validation** before generating Terraform to ensure configurations comply with Checkly Terraform provider constraints.
+
+### Validated Constraints
+
+#### Frequency Values
+Check frequency must be one of these minute intervals:
+- `0` (on-demand, requires `frequency_offset`)
+- `1, 2, 5, 10, 15, 30` (high frequency)
+- `60, 120, 180, 360, 720, 1440` (hourly to daily)
+
+#### Response Time Thresholds
+- **API/Browser/Multi-step checks**: 0-30000 ms (30 seconds max)
+- **URL monitors**: 0-30000 ms (30 seconds max)
+- **TCP monitors**: 0-5000 ms (5 seconds max)
+- **DNS monitors**: 0-5000 ms (5 seconds max)
+- **Constraint**: `degraded_response_time` must be less than `max_response_time`
+
+#### Alert Settings
+- **escalation_type**: Must be `RUN_BASED` or `TIME_BASED`
+- **failed_run_threshold**: 1-5 runs
+- **minutes_failing_threshold**: 5, 10, 15, or 30 minutes
+- **reminder.amount**: 0-5 or 100000 (unlimited)
+- **reminder.interval**: 5, 10, 15, or 30 minutes
+- **parallel_run_failure_threshold.percentage**: 10-100 in increments of 10
+
+#### Retry Strategy
+- **type**: `FIXED`, `LINEAR`, `EXPONENTIAL`, `SINGLE_RETRY`, or `NO_RETRIES`
+- **max_retries**: 1-10
+- **max_duration_seconds**: 0-600 (10 minutes max)
+- **base_backoff_seconds**: Must be >= 0
+
+#### SSL Expiry (Email Only)
+- **ssl_expiry_threshold**: 1-30 days
+
+#### Environment Variables
+- **key**: Must start with letter or underscore, contain only alphanumeric + underscores
+- **value**: Cannot be empty (unless using `var:` reference)
+
+### Validation Error Messages
+
+The tool provides **clear, actionable error messages** when validation fails:
+
+```
+API Check "api-health": Invalid frequency 3. Must be one of: 0, 1, 2, 5, 10, 15, 30, 60, 120, 180, 360, 720, 1440
+
+TCP Monitor "database": max_response_time must be 0-5000ms, got 10000
+
+DNS Monitor "resolver": degraded_response_time (3000) cannot exceed max_response_time (2000)
+
+Browser Check "user-flow": environment variable "123_VAR" has invalid key. Keys must start with a letter or underscore.
+```
+
+All validation occurs **before** any Terraform files are written, preventing invalid configurations from being generated.
+
 ## Project Structure
 
 ```
@@ -396,23 +588,31 @@ tf-checks-from-json/
 │   │   ├── json-types.ts       # Input JSON type definitions (RootConfig, AlertChannelDefinition, etc.)
 │   │   └── terraform-types.ts  # Terraform resource type definitions
 │   ├── utils/
-│   │   ├── sanitizeResourceId.ts    # Resource ID sanitization
-│   │   ├── parseAssertions.ts       # Parse assertion strings
-│   │   ├── assertionMapper.ts       # Map assertions to Terraform
-│   │   ├── formatHCL.ts            # HCL formatting utilities
-│   │   ├── fileUtils.ts            # File I/O operations
-│   │   ├── variableResolver.ts     # Variable reference parsing (var:name → var.name)
-│   │   └── validation.ts           # Alert channel validation logic
+│   │   ├── sanitizeResourceId.ts     # Resource ID sanitization
+│   │   ├── parseAssertions.ts        # Parse CLI string-based assertions
+│   │   ├── parseAssertionsObject.ts  # Parse object-based assertions (NEW)
+│   │   ├── assertionMapper.ts        # Map CLI assertions to Terraform
+│   │   ├── formatHCL.ts              # HCL formatting utilities
+│   │   ├── fileUtils.ts              # File I/O operations
+│   │   ├── variableResolver.ts       # Comprehensive variable reference parsing
+│   │   ├── hclBlockGenerators.ts     # Reusable HCL block generators
+│   │   └── validation.ts             # Configuration validation logic
 │   ├── config/
 │   │   └── constants.ts            # Configuration constants
 │   ├── generators/
-│   │   ├── generateBoilerplate.ts       # Terraform boilerplate with dynamic variables
-│   │   ├── generateAlertChannels.ts     # All 7 alert channel types
-│   │   ├── generateGroup.ts            # Check groups with alert subscriptions
-│   │   ├── generateAPICheck.ts         # API checks
-│   │   ├── generateBrowserCheck.ts     # Browser checks
-│   │   ├── generateMultiStepCheck.ts   # Multi-step checks
-│   │   └── generateDashboard.ts        # Dashboards
+│   │   ├── generateBoilerplate.ts        # Terraform boilerplate with dynamic variables
+│   │   ├── generateAlertChannels.ts      # All 7 alert channel types
+│   │   ├── generateGroup.ts              # Check groups with alert subscriptions
+│   │   ├── generateAPICheck.ts           # API checks with assertions
+│   │   ├── generateBrowserCheck.ts       # Browser checks (Playwright)
+│   │   ├── generateMultiStepCheck.ts     # Multi-step checks (API workflows)
+│   │   ├── generateUrlMonitor.ts         # URL monitors (simple uptime)
+│   │   ├── generateTcpMonitor.ts         # TCP monitors (port connectivity)
+│   │   ├── generateDnsMonitor.ts         # DNS monitors (resolution)
+│   │   ├── generateHeartbeatMonitor.ts   # Heartbeat monitors (cron jobs)
+│   │   ├── generateDashboard.ts          # Dashboards
+│   │   ├── generateSnippets.ts           # Reusable code snippets
+│   │   └── generateGlobalEnvVars.ts      # Global environment variables
 │   └── urlList/
 │       └── urlList.json        # Input configuration file
 └── __tf_checks__/              # Generated output directory
@@ -487,6 +687,8 @@ This tool mirrors the structure of `cli-checks-from-json/` (Checkly CLI implemen
 
 ## Related Documentation
 
+- **Checkly Terraform Provider**: See `_kb/checkly_tf_docs/` for resource documentation
+- **Checkly Platform**: See `_kb/checkly_docs/` for platform concepts
 - **CLI Reference**: See `cli-checks-from-json/` for original implementation
 
 ## Troubleshooting

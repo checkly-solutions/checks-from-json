@@ -48,6 +48,10 @@ export function generateAlertChannels(
   };
 
   // Generate HCL for all alert channels
+  // Note: Import blocks are not used for alert channels because their IDs are
+  // auto-assigned by Checkly's API and not known ahead of time.
+  // Unlike environment variables (where ID = key), alert channel IDs are numeric
+  // and only available after creation.
   const hclBlocks = alertChannelDefs.map((def) => {
     const generator = generators[def.type];
     if (!generator) {

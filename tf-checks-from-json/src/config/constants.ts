@@ -65,8 +65,11 @@ export const ASSERTION_COMPARISON_MAP: { [key: string]: string } = {
   lessThanOrEqual: 'LESS_THAN_OR_EQUAL',
   isEmpty: 'IS_EMPTY',
   isNotEmpty: 'IS_NOT_EMPTY',
+  notEmpty: 'NOT_EMPTY',
   hasKey: 'HAS_KEY',
+  notHasKey: 'NOT_HAS_KEY',
   hasValue: 'HAS_VALUE',
+  notHasValue: 'NOT_HAS_VALUE',
   isNull: 'IS_NULL',
   isNotNull: 'IS_NOT_NULL',
 };
@@ -91,9 +94,9 @@ export const VALID_RETRY_TYPES = [
  * Valid frequency values (in minutes)
  * Covers standard intervals from 0 (on-demand) to 1440 (daily)
  */
-export const VALID_FREQUENCY_VALUES = [
+export const VALID_FREQUENCY_VALUES: number[] = [
   0, 1, 2, 5, 10, 15, 30, 60, 120, 180, 360, 720, 1440
-] as const;
+];
 
 /**
  * Valid HTTP request body types

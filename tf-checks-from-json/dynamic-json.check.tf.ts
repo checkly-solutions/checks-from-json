@@ -92,7 +92,11 @@ function main(): void {
 
   // Collect variable references
   console.log('🔍 Collecting variable references...');
-  const variableRefs = collectVariableReferences(alertChannelDefs);
+  const variableRefs = collectVariableReferences(
+    alertChannelDefs,
+    apps,
+    rootConfig.global_environment_variables
+  );
   console.log(`   Found ${variableRefs.size} variable reference(s)\n`);
 
   // Generate boilerplate files with dynamic variables
@@ -123,15 +127,12 @@ function main(): void {
   apps.forEach((app, appIndex) => {
     console.log(`📦 Processing app ${appIndex + 1}/${apps.length}: ${app.appName}`);
 
-    // Create app directory
     const sanitizedAppName = sanitizeResourceId(app.appName);
-    const appDir = path.join(outputDir, sanitizedAppName);
-    ensureDir(appDir);
 
     // Generate dashboard
     console.log(`   ├─ Generating dashboard...`);
     const dashboardHCL = generateDashboard(app.appName, app.dashboard);
-    const dashboardPath = path.join(appDir, 'dashboard.tf');
+    const dashboardPath = path.join(outputDir, `${sanitizedAppName}-dashboard.tf`);
     writeHCL(dashboardPath, dashboardHCL);
 
     // Arrays to collect HCL for groups and checks
@@ -215,15 +216,15 @@ function main(): void {
 
     // Write groups.tf
     if (groupsHCL.length > 0) {
-      console.log(`   ├─ Writing groups.tf (${groupsHCL.length} groups)`);
-      const groupsPath = path.join(appDir, 'groups.tf');
+      console.log(`   ├─ Writing ${sanitizedAppName}-groups.tf (${groupsHCL.length} groups)`);
+      const groupsPath = path.join(outputDir, `${sanitizedAppName}-groups.tf`);
       writeHCL(groupsPath, groupsHCL.join('\n\n'));
     }
 
     // Write checks.tf
     if (checksHCL.length > 0) {
-      console.log(`   ├─ Writing checks.tf (${checksHCL.length} checks)`);
-      const checksPath = path.join(appDir, 'checks.tf');
+      console.log(`   ├─ Writing ${sanitizedAppName}-checks.tf (${checksHCL.length} checks)`);
+      const checksPath = path.join(outputDir, `${sanitizedAppName}-checks.tf`);
       writeHCL(checksPath, checksHCL.join('\n\n'));
     }
 

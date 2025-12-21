@@ -59,7 +59,10 @@ export function escapeHCLString(value: string): string {
  * // EOT
  */
 export function wrapHeredoc(script: string, marker: string = 'EOT'): string {
-  return `<<-${marker}\n${script}\n${marker}`;
+  // Escape dollar signs in template literals for Terraform
+  // JavaScript ${variable} becomes Terraform $${variable} which renders as ${variable}
+  const escapedScript = script.replace(/\$/g, '$$$$');
+  return `<<-${marker}\n${escapedScript}\n${marker}`;
 }
 
 /**

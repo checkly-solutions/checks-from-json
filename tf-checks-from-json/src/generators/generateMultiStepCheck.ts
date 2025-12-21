@@ -16,24 +16,42 @@ import {
   DEFAULT_RUNTIME_ID,
   DEFAULT_DEGRADED_RESPONSE_TIME,
   DEFAULT_MAX_RESPONSE_TIME,
+  MAX_RESPONSE_TIME_HTTP,
+  VALID_FREQUENCY_VALUES,
 } from '../config/constants';
+import {
+  validateAlertSettings,
+  validateRetryStrategy,
+  validateEnvironmentVariables,
+} from '../utils/validation';
 
 /**
  * Generate HCL for a multi-step check resource
  *
+ * Multi-step checks test complex API workflows with multiple sequential requests.
+ * Uses Playwright's request API to execute HTTP request sequences.
+ *
+ * Validates all configurations against Checkly Terraform provider constraints including:
+ * - Frequency values (0, 1, 2, 5, 10, 15, 30, 60, 120, 180, 360, 720, 1440 minutes)
+ * - Response times (0-30000ms for multi-step checks)
+ * - Alert settings (escalation types, thresholds, reminders)
+ * - Retry strategies (types, max retries, backoff durations)
+ *
  * @param app - The application configuration object
- * @param tier - The tier name (app1, app2, app3, or app4)
- * @param check - The multi-step check configuration
+ * @param tier - The tier name (e.g., "production", "staging")
+ * @param check - The multi-step check configuration with API workflow script
  * @param groupResourceId - The Terraform resource ID of the parent group
  * @returns HCL resource block as a string
  *
  * @example
- * generateMultiStepCheck(app, "app1", {
- *   filePath: "/multi-scripts/multi-CRUD.spec.ts",
- *   frequency: 5,
+ * generateMultiStepCheck(app, "production", {
+ *   filePath: "/multi-scripts/api-workflow.spec.ts",
+ *   frequency: 10,
  *   activated: true,
- *   urlShort: "service-2"
- * }, "env_observability_app1_group")
+ *   urlShort: "complete-api-workflow",
+ *   degraded_response_time: 20000,
+ *   max_response_time: 30000
+ * }, "app_production_group")
  */
 export function generateMultiStepCheck(
   app: UrlListConfig,
@@ -54,6 +72,45 @@ export function generateMultiStepCheck(
   const tags = [tier, sanitizedAppName, 'cli'];
   const tagsHCL = formatHCLList(tags);
 
+  // Validate configuration
+  // Frequency validation
+  if (!VALID_FREQUENCY_VALUES.includes(check.frequency)) {
+    throw new Error(
+      `Multi-Step Check "${check.urlShort}": Invalid frequency ${check.frequency}. Must be one of: ${VALID_FREQUENCY_VALUES.join(', ')}`
+    );
+  }
+
+  // Response time validation
+  const degradedTime = check.degraded_response_time ?? DEFAULT_DEGRADED_RESPONSE_TIME;
+  const maxTime = check.max_response_time ?? DEFAULT_MAX_RESPONSE_TIME;
+
+  if (degradedTime < 0 || degradedTime > MAX_RESPONSE_TIME_HTTP) {
+    throw new Error(
+      `Multi-Step Check "${check.urlShort}": degraded_response_time must be 0-${MAX_RESPONSE_TIME_HTTP}ms, got ${degradedTime}`
+    );
+  }
+  if (maxTime < 0 || maxTime > MAX_RESPONSE_TIME_HTTP) {
+    throw new Error(
+      `Multi-Step Check "${check.urlShort}": max_response_time must be 0-${MAX_RESPONSE_TIME_HTTP}ms, got ${maxTime}`
+    );
+  }
+  if (degradedTime > maxTime) {
+    throw new Error(
+      `Multi-Step Check "${check.urlShort}": degraded_response_time (${degradedTime}) cannot exceed max_response_time (${maxTime})`
+    );
+  }
+
+  // Validate optional configurations
+  if (check.alert_settings) {
+    validateAlertSettings(check.alert_settings, `Multi-Step Check "${check.urlShort}"`);
+  }
+  if (check.retry_strategy) {
+    validateRetryStrategy(check.retry_strategy, `Multi-Step Check "${check.urlShort}"`);
+  }
+  if (check.environment_variables) {
+    validateEnvironmentVariables(check.environment_variables, `Multi-Step Check "${check.urlShort}"`);
+  }
+
   // Read and inline the script file
   let scriptContent: string;
   try {
@@ -66,10 +123,6 @@ export function generateMultiStepCheck(
 
   // Wrap script in heredoc
   const scriptHCL = wrapHeredoc(scriptContent, 'EOT');
-
-  // Get response time thresholds (with defaults)
-  const degradedTime = check.degraded_response_time ?? DEFAULT_DEGRADED_RESPONSE_TIME;
-  const maxTime = check.max_response_time ?? DEFAULT_MAX_RESPONSE_TIME;
 
   // Get runtime_id (with default)
   const runtimeId = check.runtime_id ?? DEFAULT_RUNTIME_ID;

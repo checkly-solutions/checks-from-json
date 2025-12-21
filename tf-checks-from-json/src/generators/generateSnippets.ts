@@ -47,6 +47,11 @@ export function generateSnippet(snippet: SnippetConfig): string {
 /**
  * Generate HCL for all snippet resources
  *
+ * Note: Import blocks are not used for snippets because their IDs are
+ * auto-assigned by Checkly's API and not known ahead of time.
+ * Unlike environment variables (where ID = key), snippet IDs are numeric
+ * and only available after creation.
+ *
  * @param snippets - Array of snippet configurations
  * @returns Combined HCL for all snippets
  */

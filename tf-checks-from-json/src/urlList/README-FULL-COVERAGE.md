@@ -348,6 +348,7 @@ terraform validate
 **Features**:
 - Response time thresholds
 - Custom headers and query parameters
+- **Object-based assertions** (recommended format - see Assertion Formats section below)
 - Multiple assertions (status code, JSON body validation)
 - SSL domain verification
 - Check ordering within group
@@ -404,6 +405,145 @@ resource "checkly_check" "api_create_user_..." {
 
 ---
 
+### 6A. API Check Assertion Formats
+
+The tool supports **two assertion formats** for API checks. Both generate identical Terraform HCL.
+
+#### Object-Based Format (Recommended)
+
+**Clearer, more structured, and easier to read/maintain:**
+
+```json
+{
+  "assertions": [
+    {
+      "statusCode": {
+        "lessThan": 400
+      }
+    },
+    {
+      "jsonBody": {
+        "hasKey": "status"
+      }
+    },
+    {
+      "jsonBody": {
+        "equals": "healthy",
+        "property": "status"
+      }
+    },
+    {
+      "headers": {
+        "contains": "application/json",
+        "property": "Content-Type"
+      }
+    },
+    {
+      "responseTime": {
+        "lessThan": 1000
+      }
+    }
+  ]
+}
+```
+
+#### CLI String-Based Format (Legacy)
+
+**Original Checkly CLI format still supported for backward compatibility:**
+
+```json
+{
+  "assertions": [
+    ["statusCode().lessThan(400)"],
+    ["jsonBody().hasKey('status')"],
+    ["jsonBody().get('status').equals('healthy')"],
+    ["headers('Content-Type').contains('application/json')"],
+    ["responseTime().lessThan(1000)"]
+  ]
+}
+```
+
+#### Supported Assertion Sources
+
+| Source | Object Key | CLI Method | Checks |
+|--------|-----------|------------|---------|
+| Status Code | `statusCode` | `statusCode()` | HTTP response status |
+| JSON Body | `jsonBody` | `jsonBody()` | JSON response content |
+| Text Body | `textBody` | `textBody()` | Plain text response |
+| Headers | `headers` | `headers('name')` | HTTP response headers |
+| Response Time | `responseTime` | `responseTime()` | Request duration (ms) |
+
+#### Supported Comparisons
+
+| Comparison | Object Key | CLI Method | Description |
+|------------|-----------|------------|-------------|
+| Equals | `equals` | `equals(value)` | Exact match |
+| Not Equals | `notEquals` | `notEquals(value)` | Not equal |
+| Contains | `contains` | `contains(value)` | String/array contains |
+| Not Contains | `notContains` | `notContains(value)` | Does not contain |
+| Greater Than | `greaterThan` | `greaterThan(value)` | Numeric > |
+| Greater Than or Equal | `greaterThanOrEqual` | `greaterThanOrEqual(value)` | Numeric >= |
+| Less Than | `lessThan` | `lessThan(value)` | Numeric < |
+| Less Than or Equal | `lessThanOrEqual` | `lessThanOrEqual(value)` | Numeric <= |
+| Has Key | `hasKey` | `hasKey(key)` | JSON object has key |
+| Has Value | `hasValue` | `hasValue(value)` | JSON contains value |
+| Is Empty | `isEmpty` | `isEmpty()` | Empty string/array/object |
+| Is Null | `isNull` | `isNull()` | Null value |
+| Not Empty | `notEmpty` | `notEmpty()` | Not empty |
+| Not Has Key | `notHasKey` | `notHasKey(key)` | JSON object missing key |
+| Not Has Value | `notHasValue` | `notHasValue(value)` | JSON missing value |
+| Not Null | `notNull` | `notNull()` | Not null |
+
+#### Property Field (JSON Path Queries)
+
+For `jsonBody` and `headers`, use the `property` field to specify which field to check:
+
+```json
+{
+  "jsonBody": {
+    "equals": "healthy",
+    "property": "status"
+  }
+}
+```
+
+**Nested Properties**:
+```json
+{
+  "jsonBody": {
+    "greaterThan": 100,
+    "property": "data.user.id"
+  }
+}
+```
+
+#### Generated Terraform (Both Formats Produce Same Output)
+
+```hcl
+request {
+  assertion {
+    source     = "STATUS_CODE"
+    comparison = "LESS_THAN"
+    target     = "400"
+  }
+
+  assertion {
+    source     = "JSON_BODY"
+    comparison = "HAS_KEY"
+    target     = "status"
+  }
+
+  assertion {
+    source     = "JSON_BODY"
+    property   = "status"
+    comparison = "EQUALS"
+    target     = "healthy"
+  }
+}
+```
+
+---
+
 ### 7. Browser Check (Lines 231-250)
 
 **Playwright-based end-to-end test**:
@@ -452,7 +592,7 @@ resource "checkly_check" "api_create_user_..." {
   "activated": true,
   "urlShort": "complete-api-workflow",
   "degraded_response_time": 20000,
-  "max_response_time": 40000,
+  "max_response_time": 30000,
   "setup_snippet_id": "auth_setup",
   "teardown_snippet_id": "cleanup_teardown",
   "group_order": 20
@@ -659,7 +799,161 @@ Generates:
 value = var.api_token
 ```
 
-All variable references are automatically collected and added to `variables.tf`.
+### Comprehensive Variable Collection
+
+The tool scans **all configuration levels** to automatically collect variable references:
+
+1. **Global Environment Variables** (lines 2-12)
+   - `var:global_secret` → `var.global_secret`
+
+2. **Alert Channel Configurations** (lines 24-65)
+   - `var:slack_webhook_url` → `var.slack_webhook_url`
+   - `var:pagerduty_key` → `var.pagerduty_key`
+
+3. **Tier-Level Environment Variables** (lines 122-132)
+   - `var:prod_api_key` → `var.prod_api_key`
+
+4. **Tier-Level API Check Defaults** (headers, query_parameters, basic_auth)
+   - Any `var:*` references in default headers/parameters
+
+5. **Check-Level Configurations**
+   - Headers: `var:api_token` → `var.api_token` (line 162)
+   - Basic Auth: `var:api_user`, `var:api_pass` → `var.api_user`, `var.api_pass` (lines 204-205)
+   - Environment Variables: Any check-specific variables
+
+All collected variables are automatically declared in `variables.tf` with:
+- Appropriate type (`string` for all current use cases)
+- Descriptive name based on usage context
+- `sensitive = true` for security-sensitive values
+
+**Example Generated Variables**:
+```hcl
+variable "global_secret" {
+  type        = string
+  description = "Alert channel configuration value for global_secret"
+  sensitive   = true
+}
+
+variable "api_token" {
+  type        = string
+  description = "Alert channel configuration value for api_token"
+  sensitive   = true
+}
+```
+
+---
+
+## Configuration Validation
+
+The tool validates all configurations against **Checkly Terraform provider constraints** before generating HCL files. This ensures that `terraform validate` will pass.
+
+### Validated Constraints
+
+#### 1. Frequency Values
+
+**Valid Values**: `0, 1, 2, 5, 10, 15, 30, 60, 120, 180, 360, 720, 1440` minutes
+
+**Applies To**: All check types (API, Browser, Multi-step, URL Monitor, TCP Monitor, DNS Monitor)
+
+**Example Error**:
+```
+API Check "api-health": Invalid frequency 3. Must be one of: 0, 1, 2, 5, 10, 15, 30, 60, 120, 180, 360, 720, 1440
+```
+
+#### 2. Response Time Limits
+
+**HTTP-Based Checks** (API, Browser, Multi-step, URL Monitor):
+- Range: `0-30000` milliseconds
+- Constraint: `degraded_response_time` must be ≤ `max_response_time`
+
+**TCP/DNS Monitors**:
+- Range: `0-5000` milliseconds
+- Constraint: `degraded_response_time` must be ≤ `max_response_time`
+
+**Example Error**:
+```
+Multi-Step Check "complete-api-workflow": max_response_time must be 0-30000ms, got 40000
+TCP Monitor "Database Connection": degraded_response_time must be 0-5000ms, got 6000
+API Check "api-health": degraded_response_time (15000) cannot exceed max_response_time (10000)
+```
+
+#### 3. Alert Settings
+
+**Escalation Types**: `RUN_BASED` or `TIME_BASED`
+
+**Run-Based Escalation**:
+- `failed_run_threshold`: `1-5`
+
+**Time-Based Escalation**:
+- `minutes_failing_threshold`: `5, 10, 15, 30`
+
+**Reminders** (optional):
+- `amount`: `0-5`
+- `interval`: `5-1440` minutes
+
+**Parallel Run Failure Threshold** (optional):
+- `percentage`: `10-100`
+
+**Example Error**:
+```
+Invalid failed_run_threshold: 10. Must be 1-5
+Invalid minutes_failing_threshold: 45. Must be one of: 5, 10, 15, 30
+```
+
+#### 4. Retry Strategy
+
+**Types**: `FIXED`, `LINEAR`, `EXPONENTIAL`, `SINGLE_RETRY`, `NO_RETRIES`
+
+**Constraints**:
+- `max_retries`: `1-10`
+- `base_backoff_seconds`: `1-600`
+- `max_duration_seconds`: Maximum `600`
+- `same_region`: Boolean
+
+**Example Error**:
+```
+Invalid max_retries: 15. Must be 1-10
+Invalid max_duration_seconds: 900. Cannot exceed 600
+```
+
+#### 5. SSL Expiry Settings
+
+**Constraints**:
+- `ssl_expiry`: Boolean
+- `ssl_expiry_threshold`: `1-30` days
+
+**Example Error**:
+```
+Invalid ssl_expiry_threshold: 60. Must be 1-30 days
+```
+
+#### 6. Environment Variables
+
+**Constraints**:
+- `key`: Required, non-empty string
+- `value`: Required string
+- `locked`: Optional boolean
+- `secret`: Optional boolean
+
+**Example Error**:
+```
+Environment variable missing required 'key' field
+Environment variable 'API_KEY' missing required 'value' field
+```
+
+### How Validation Works
+
+1. **Before Generation**: All configurations are validated before any Terraform HCL is written
+2. **Clear Error Messages**: Errors specify which check/monitor failed and why
+3. **Early Exit**: Tool stops on first validation error (fail fast)
+4. **Context Included**: Error messages include check/monitor name for easy debugging
+
+### Validation Benefits
+
+- **Prevents Invalid Terraform**: Catches errors before `terraform validate`
+- **Saves Time**: No need to run Terraform to discover basic constraint violations
+- **Better Error Messages**: More specific than Terraform provider errors
+- **Documentation**: Validation errors teach you the allowed values
 
 ---
 
@@ -798,10 +1092,12 @@ terraform apply
 
 ## Related Documentation
 
-- **Main README**: `../../README.md` - Overall project documentation
+- **Main README**: `../../README.md` - Overall project documentation and detailed assertion format guide
 - **JSON Types**: `../types/json-types.ts` - Complete TypeScript interfaces
-- **Constants**: `../config/constants.ts` - All valid values and defaults
-- **Validation**: `../utils/validation.ts` - Validation function reference
+- **Constants**: `../config/constants.ts` - All valid values, assertion mappings, and defaults
+- **Validation**: `../utils/validation.ts` - Validation function reference with all constraints
+- **Assertion Parser**: `../utils/parseAssertionsObject.ts` - Object-based assertion format parser
+- **Variable Resolver**: `../utils/variableResolver.ts` - Comprehensive variable collection logic
 - **Checkly Terraform Docs**: `_kb/checkly_tf_docs/` - Official provider documentation
 
 ---

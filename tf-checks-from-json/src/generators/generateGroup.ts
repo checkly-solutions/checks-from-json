@@ -57,7 +57,9 @@ export function generateGroup(appName: string, tier: string, tierDef: TierDefini
 
   // Build tags list (combine tier-level tags with default tags)
   const defaultTags = [sanitizedAppName, tier];
-  const allTags = tierDef.tags ? [...defaultTags, ...tierDef.tags] : defaultTags;
+  const allTags = tierDef.tags
+    ? Array.from(new Set([...defaultTags, ...tierDef.tags])) // Deduplicate with Set
+    : defaultTags;
   const tagsHCL = formatHCLList(allTags);
 
   // Generate single alert channel subscription for this tier
@@ -85,7 +87,17 @@ export function generateGroup(appName: string, tier: string, tierDef: TierDefini
   // Generate api_check_defaults block if present
   let apiCheckDefaultsHCL = '';
   if (tierDef.api_check_defaults) {
+    // Validate required field (defensive programming)
+    if (!tierDef.api_check_defaults.url) {
+      throw new Error(
+        `Check Group "${name}": api_check_defaults.url is required but was not provided. This is a required field in the Checkly Terraform provider.`
+      );
+    }
+
     apiCheckDefaultsHCL = '\n\n  api_check_defaults {\n';
+
+    // Always output url first (required field)
+    apiCheckDefaultsHCL += `    url = "${tierDef.api_check_defaults.url}"\n`;
 
     // Add headers if present
     if (tierDef.api_check_defaults.headers) {

@@ -229,6 +229,8 @@ export interface CallChannelConfig {
  * These defaults are inherited by checks unless overridden at the check level
  */
 export interface ApiCheckDefaults {
+  /** Base URL for all API checks in this group (REQUIRED by Terraform provider) */
+  url: string;
   /** Default headers for all API checks in this group */
   headers?: { [key: string]: string };
   /** Default query parameters for all API checks in this group */

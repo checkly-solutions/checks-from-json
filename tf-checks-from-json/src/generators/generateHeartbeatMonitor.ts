@@ -68,12 +68,15 @@ export function generateHeartbeatMonitor(
 
   return `resource "checkly_heartbeat_monitor" "${resourceId}" {
   name                      = "${name}"
-  period                    = ${monitor.period}
-  period_unit               = "${monitor.period_unit}"
-  grace                     = ${monitor.grace}
-  grace_unit                = "${monitor.grace_unit}"
   activated                 = ${formatHCLBool(monitor.activated)}
   tags                      = ${tagsHCL}
-  use_global_alert_settings = ${formatHCLBool(useGlobalAlertSettings)}${mutedHCL}${alertSettingsHCL}
+  use_global_alert_settings = ${formatHCLBool(useGlobalAlertSettings)}${mutedHCL}
+
+  heartbeat {
+    period      = ${monitor.period}
+    period_unit = "${monitor.period_unit}"
+    grace       = ${monitor.grace}
+    grace_unit  = "${monitor.grace_unit}"
+  }${alertSettingsHCL}
 }`;
 }
