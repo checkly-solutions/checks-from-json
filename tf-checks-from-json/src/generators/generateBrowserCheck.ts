@@ -204,6 +204,11 @@ export function generateBrowserCheck(
     mutedHCL = `\n  muted = ${formatHCLBool(check.muted)}`;
   }
 
+  let sslCheckDomainHCL = '';
+  if (check.ssl_check_domain) {
+    sslCheckDomainHCL = `\n  ssl_check_domain = "${check.ssl_check_domain}"`;
+  }
+
   return `resource "checkly_check" "${resourceId}" {
   name                      = "${name}"
   type                      = "BROWSER"
@@ -214,7 +219,7 @@ export function generateBrowserCheck(
   runtime_id                = "${runtimeId}"
   degraded_response_time    = ${degradedTime}
   max_response_time         = ${maxTime}
-  use_global_alert_settings = ${formatHCLBool(useGlobalAlertSettings)}${groupOrderHCL}${frequencyOffsetHCL}${locationsHCL}${mutedHCL}${localSetupScriptHCL}${localTeardownScriptHCL}${setupSnippetHCL}${teardownSnippetHCL}
+  use_global_alert_settings = ${formatHCLBool(useGlobalAlertSettings)}${groupOrderHCL}${frequencyOffsetHCL}${locationsHCL}${mutedHCL}${sslCheckDomainHCL}${localSetupScriptHCL}${localTeardownScriptHCL}${setupSnippetHCL}${teardownSnippetHCL}
 
   script = ${scriptHCL}${alertSettingsHCL}${retryStrategyHCL}${environmentVariablesHCL}
 }`;

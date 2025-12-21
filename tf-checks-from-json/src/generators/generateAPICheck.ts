@@ -298,11 +298,6 @@ export function generateAPICheck(
     mutedHCL = `\n  muted = ${formatHCLBool(check.muted)}`;
   }
 
-  let sslCheckDomainHCL = '';
-  if (check.ssl_check_domain) {
-    sslCheckDomainHCL = `\n  ssl_check_domain = "${check.ssl_check_domain}"`;
-  }
-
   return `resource "checkly_check" "${resourceId}" {
   name                      = "${name}"
   type                      = "API"
@@ -314,7 +309,7 @@ export function generateAPICheck(
   degraded_response_time    = ${degradedTime}
   max_response_time         = ${maxTime}
   runtime_id                = "${runtimeId}"
-  use_global_alert_settings = ${formatHCLBool(useGlobalAlertSettings)}${groupOrderHCL}${frequencyOffsetHCL}${locationsHCL}${mutedHCL}${sslCheckDomainHCL}${localSetupScriptHCL}${localTeardownScriptHCL}${setupSnippetHCL}${teardownSnippetHCL}
+  use_global_alert_settings = ${formatHCLBool(useGlobalAlertSettings)}${groupOrderHCL}${frequencyOffsetHCL}${locationsHCL}${mutedHCL}${localSetupScriptHCL}${localTeardownScriptHCL}${setupSnippetHCL}${teardownSnippetHCL}
 
   request {
     url              = "${check.url}"

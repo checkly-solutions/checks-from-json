@@ -547,6 +547,8 @@ export interface BrowserCheckConfig {
   setup_snippet_id?: string;
   /** ID of snippet to use for teardown (references snippet from snippets array) */
   teardown_snippet_id?: string;
+  /** Domain to check SSL certificate for (FQDN to monitor SSL expiration) */
+  ssl_check_domain?: string;
 }
 
 /**
@@ -605,8 +607,6 @@ export interface ApiCheckConfig {
   follow_redirects?: boolean;
   /** Whether to skip SSL certificate verification (default: true) */
   skip_ssl?: boolean;
-  /** Domain to check SSL certificate for */
-  ssl_check_domain?: string;
   /** Order of the check within the group */
   group_order?: number;
   /** Frequency offset in seconds (0, 10, 20, 30) when frequency=0 */
@@ -623,6 +623,8 @@ export interface ApiCheckConfig {
   setup_snippet_id?: string;
   /** ID of snippet to use for teardown (references snippet from snippets array) */
   teardown_snippet_id?: string;
+  /** Domain to check SSL certificate for (FQDN to monitor SSL expiration) */
+  ssl_check_domain?: string;
 }
 
 /**
@@ -668,4 +670,6 @@ export interface MultiStepCheckConfig {
   setup_snippet_id?: string;
   /** ID of snippet to use for teardown (references snippet from snippets array) */
   teardown_snippet_id?: string;
+  /** Domain to check SSL certificate for (FQDN to monitor SSL expiration) */
+  ssl_check_domain?: string;
 }
