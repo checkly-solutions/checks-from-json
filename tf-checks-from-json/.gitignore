@@ -1,0 +1,9 @@
+node_modules/
+dist/
+__checkly_tf__/
+*.log
+.DS_Store
+*.tfstate
+*.tfstate.*
+.terraform/
+*.tfvars
