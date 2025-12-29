@@ -12,6 +12,7 @@ export type ResourceType =
   | 'api'
   | 'browser'
   | 'multistep'
+  | 'uptime'
   | 'group'
   | 'dashboard'
   | 'email'
@@ -54,6 +55,7 @@ export function generateResourceId(
     case 'api':
     case 'browser':
     case 'multistep':
+    case 'uptime':
       // Pattern: {type}_{urlShort}_{appName}_{tier}
       if (urlShort) parts.push(sanitize(urlShort));
       parts.push(sanitize(appName));

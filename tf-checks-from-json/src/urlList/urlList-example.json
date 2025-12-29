@@ -1,0 +1,62 @@
+[
+  {
+    "appName": "Production-API",
+    "globalConfig": {
+      "defaultLocations": ["us-east-1", "eu-west-1"],
+      "defaultFrequency": 5
+    },
+    "app1": [
+      {
+        "locations": ["us-west-1", "eu-west-1", "ap-south-1"],
+        "uptime_check": [
+          {
+            "url": "https://api.production.com",
+            "frequency": 1,
+            "activated": true,
+            "urlShort": "api-uptime",
+            "locations": ["us-east-1", "us-west-2", "eu-west-1", "ap-south-1"],
+            "followRedirects": true,
+            "skipSsl": false,
+            "assertions": [["statusCode().equals(200)"]],
+            "degradedResponseTime": 2000,
+            "maxResponseTime": 5000
+          }
+        ],
+        "api_check": [
+          {
+            "url": "https://api.production.com/health",
+            "method": "GET",
+            "frequency": 5,
+            "activated": true,
+            "urlShort": "health-check",
+            "locations": ["us-east-1", "eu-west-1"],
+            "assertions": [["statusCode().equals(200)"]]
+          }
+        ],
+        "browser_check": [
+          {
+            "filePath": "/browser-scripts/visit.spec.ts",
+            "frequency": 10,
+            "activated": true,
+            "urlShort": "checkout-flow"
+          }
+        ]
+      }
+    ],
+    "app2": [
+      {
+        "uptime_check": [
+          {
+            "url": "https://staging.production.com",
+            "frequency": 5,
+            "activated": true,
+            "urlShort": "staging-uptime",
+            "assertions": [["statusCode().equals(200)"]]
+          }
+        ]
+      }
+    ],
+    "app3": [],
+    "app4": []
+  }
+]

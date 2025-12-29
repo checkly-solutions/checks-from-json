@@ -87,17 +87,18 @@ async function main() {
 
     // 3. Create check group for app1
     log('3. Creating check group...');
-    const checkGroup = transformCheckGroup(testApp, 'app1', alertChannels);
+    const tierConfig = testApp.app1[0] || {};
+    const checkGroup = transformCheckGroup(testApp, 'app1', alertChannels, tierConfig);
     checkGroup.hcl = generateHcl(checkGroup);
     success(`Check group created: ${checkGroup.resourceId}`);
 
     // 4. Create API checks
     log('4. Creating API checks...');
     const apiChecks = [];
-    for (const tierConfig of testApp.app1) {
-      if (tierConfig.api_check) {
-        for (const check of tierConfig.api_check) {
-          const apiCheck = transformApiCheck(testApp, 'app1', check, checkGroup);
+    for (const checkCategory of testApp.app1) {
+      if (checkCategory.api_check) {
+        for (const check of checkCategory.api_check) {
+          const apiCheck = transformApiCheck(testApp, 'app1', check, checkGroup, checkCategory);
           apiCheck.hcl = generateHcl(apiCheck);
           apiChecks.push(apiCheck);
         }

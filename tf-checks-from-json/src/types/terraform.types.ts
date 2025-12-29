@@ -39,6 +39,36 @@ export interface TerraformCheck extends TerraformResource {
 }
 
 /**
+ * Terraform URL Monitor resource (checkly_url_monitor)
+ * Lightweight HTTP uptime monitoring
+ */
+export interface TerraformUrlMonitor extends TerraformResource {
+  resourceType: 'checkly_url_monitor';
+  attributes: {
+    name: string;
+    activated: boolean;
+    frequency: number;
+    locations: string[];
+    group_id: string;
+    tags: string[];
+    degraded_response_time: number;
+    max_response_time: number;
+    should_fail: boolean;
+    use_global_alert_settings: boolean;
+    request: {
+      url: string;
+      follow_redirects: boolean;
+      skip_ssl: boolean;
+      assertion: Array<{
+        source: string;
+        comparison: string;
+        target: string;
+      }>;
+    };
+  };
+}
+
+/**
  * Terraform Request block for API checks
  */
 export interface TerraformRequest {

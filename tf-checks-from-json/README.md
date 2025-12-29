@@ -29,7 +29,9 @@ A TypeScript tool that converts Checkly monitoring configurations from JSON to T
 
 ## Features
 
-- ✅ **Multiple Check Types**: API checks, browser checks, and multi-step checks
+- ✅ **Multiple Check Types**: API checks, browser checks, multi-step checks, and uptime monitors
+- ✅ **Variable Locations**: 4-level location precedence (check > tier > global > defaults)
+- ✅ **Uptime Monitors**: Lightweight HTTP availability monitoring
 - ✅ **Alert Channels**: Email and webhook integrations (ServiceNow, MS Teams)
 - ✅ **Check Groups**: Organize checks with shared alert subscriptions
 - ✅ **Dashboards**: Custom dashboards with tag-based filtering
@@ -244,6 +246,7 @@ __checkly_tf__/
 ├── checks_api.tf               # All API checks
 ├── checks_browser.tf           # All browser checks
 ├── checks_multistep.tf         # All multi-step checks
+├── monitors_uptime.tf          # All uptime monitors
 ├── dashboards.tf               # Application dashboards
 ├── .gitignore                  # Ignore sensitive files
 └── README.md                   # Deployment instructions
@@ -274,6 +277,228 @@ Complex API workflows:
 - State sharing between steps
 - API CRUD operation testing
 - Integration testing
+
+### 4. Uptime Monitors
+
+Lightweight HTTP availability monitoring:
+- Simple URL status code checks
+- Lower resource usage than API checks
+- Optimized for high-frequency monitoring
+- STATUS_CODE assertions only (no JSON_BODY, no setup scripts)
+- Ideal for basic availability checks
+
+## Location Configuration
+
+The tool supports flexible location configuration with **4-level precedence**:
+
+### Precedence Hierarchy
+
+1. **Check-level locations** (highest precedence)
+2. **Tier-level locations**
+3. **Global default locations**
+4. **Hardcoded defaults** (backwards compatibility)
+
+### Global Default Locations
+
+Define default locations for all checks at the app level:
+
+```json
+{
+  "appName": "Production-API",
+  "globalConfig": {
+    "defaultLocations": ["us-east-1", "eu-west-1"],
+    "defaultFrequency": 5
+  },
+  "app1": [...]
+}
+```
+
+All checks will use `["us-east-1", "eu-west-1"]` unless overridden.
+
+### Tier-Level Locations
+
+Override global defaults for a specific tier:
+
+```json
+{
+  "appName": "Production-API",
+  "globalConfig": {
+    "defaultLocations": ["us-east-1", "eu-west-1"]
+  },
+  "app1": [
+    {
+      "locations": ["us-west-1", "ap-south-1"],
+      "api_check": [...]
+    }
+  ]
+}
+```
+
+All checks in `app1` use `["us-west-1", "ap-south-1"]`, overriding global defaults.
+
+### Per-Check Locations
+
+Override both tier and global locations for a specific check:
+
+```json
+{
+  "api_check": [
+    {
+      "url": "https://api.example.com",
+      "locations": ["eu-west-1"],
+      "urlShort": "eu-only-check",
+      ...
+    }
+  ]
+}
+```
+
+This check only runs from `eu-west-1`, regardless of tier or global settings.
+
+### Complete Location Example
+
+```json
+[
+  {
+    "appName": "Production-API",
+    "globalConfig": {
+      "defaultLocations": ["us-east-1", "eu-west-1"]
+    },
+    "app1": [
+      {
+        "locations": ["us-west-1", "eu-west-1", "ap-south-1"],
+        "api_check": [
+          {
+            "url": "https://api.example.com/health",
+            "locations": ["us-east-1", "eu-west-1"],
+            "urlShort": "health"
+            // Uses check-level: ["us-east-1", "eu-west-1"]
+          }
+        ],
+        "browser_check": [
+          {
+            "filePath": "/browser-scripts/login.spec.ts",
+            "urlShort": "login"
+            // Uses tier-level: ["us-west-1", "eu-west-1", "ap-south-1"]
+          }
+        ]
+      }
+    ],
+    "app2": [
+      {
+        "api_check": [
+          {
+            "url": "https://staging.example.com",
+            "urlShort": "staging"
+            // Uses global: ["us-east-1", "eu-west-1"]
+          }
+        ]
+      }
+    ]
+  }
+]
+```
+
+### Backwards Compatibility
+
+If no locations are specified, the tool uses hardcoded defaults:
+- API checks: `["us-east-1", "us-west-2"]`
+- Browser/Multi-step checks: `["us-east-1", "us-west-2"]`
+- Uptime monitors: `["us-east-1", "us-west-2"]`
+
+Existing configurations without location fields continue to work unchanged.
+
+## Uptime Monitor Configuration
+
+Uptime monitors provide lightweight HTTP availability monitoring using Checkly's `checkly_url_monitor` resource.
+
+### Basic Uptime Monitor
+
+```json
+{
+  "uptime_check": [
+    {
+      "url": "https://example.com",
+      "frequency": 1,
+      "activated": true,
+      "urlShort": "homepage-uptime",
+      "assertions": [["statusCode().equals(200)"]]
+    }
+  ]
+}
+```
+
+### Complete Uptime Monitor Configuration
+
+```json
+{
+  "uptime_check": [
+    {
+      "url": "https://api.example.com",
+      "frequency": 1,
+      "activated": true,
+      "urlShort": "api-uptime",
+      "followRedirects": true,
+      "skipSsl": false,
+      "shouldFail": false,
+      "locations": ["us-east-1", "eu-west-1", "ap-south-1"],
+      "assertions": [["statusCode().equals(200)"]],
+      "degradedResponseTime": 2000,
+      "maxResponseTime": 5000
+    }
+  ]
+}
+```
+
+**Note**: The `method` field is accepted in the input JSON for compatibility but is not used in the generated Terraform. The Checkly `checkly_url_monitor` resource only supports GET requests.
+
+### Uptime Monitor Fields
+
+- **Required**:
+  - `url` (string): HTTP/HTTPS endpoint to monitor
+  - `frequency` (number): Check frequency in minutes
+  - `activated` (boolean): Enable/disable monitor
+  - `urlShort` (string): Short identifier
+
+- **Optional**:
+  - `locations` (array): Custom locations (defaults per precedence rules)
+  - `followRedirects` (boolean): Follow HTTP redirects (default: `true`)
+  - `skipSsl` (boolean): Skip SSL verification (default: `false`)
+  - `shouldFail` (boolean): Expect monitor to fail (default: `false`)
+  - `assertions` (array): Status code assertions only
+  - `degradedResponseTime` (number): Degraded threshold in ms (default: `3000`)
+  - `maxResponseTime` (number): Max response time in ms (default: `5000`)
+  - ~~`method` (string)~~: Not supported - Checkly URL monitors only support GET requests
+
+### Uptime Monitor Limitations
+
+⚠️ **Important**: Uptime monitors only support STATUS_CODE assertions:
+
+**✅ Valid**:
+```json
+"assertions": [["statusCode().equals(200)"]]
+```
+
+**❌ Invalid**:
+```json
+"assertions": [["jsonBody('$.status').equals('ok')"]]  // Not supported
+```
+
+No setup scripts, request headers, or body content are supported for uptime monitors. For complex checks, use API checks instead.
+
+### When to Use Uptime Monitors vs API Checks
+
+**Use Uptime Monitors** for:
+- Simple availability checks
+- High-frequency monitoring (every minute)
+- Basic status code validation
+- Cost-effective monitoring at scale
+
+**Use API Checks** for:
+- Complex assertions (JSON body, headers, text)
+- Authentication requirements
+- Setup scripts or request customization
+- Response payload validation
 
 ## Assertions
 

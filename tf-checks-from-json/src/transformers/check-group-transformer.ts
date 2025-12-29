@@ -3,10 +3,11 @@
  * Based on spec section 7.9 and CLI code at createGroup.ts
  */
 
-import { AppConfig } from '../types/urlList.types';
+import { AppConfig, TierConfig } from '../types/urlList.types';
 import { TerraformCheckGroup, TerraformAlertChannel } from '../types/terraform.types';
 import { generateResourceId } from '../generators/resource-id-generator';
 import { sanitize } from '../utils/sanitize';
+import { resolveLocations } from '../utils/location-resolver';
 
 /**
  * Transform an app + tier to a Terraform check group resource
@@ -26,7 +27,8 @@ import { sanitize } from '../utils/sanitize';
 export function transformCheckGroup(
   app: AppConfig,
   tier: string,
-  alertChannels: TerraformAlertChannel[]
+  alertChannels: TerraformAlertChannel[],
+  tierConfig: TierConfig
 ): TerraformCheckGroup {
   const appName = app.appName;
   const sanitizedAppName = sanitize(appName);
@@ -50,7 +52,7 @@ export function transformCheckGroup(
       activated: true,
       muted: false,
       concurrency: 100,
-      locations: ['us-east-1', 'us-west-2'],
+      locations: resolveLocations(null, tierConfig, app, 'browser'),
       tags: [sanitizedAppName, tier],
       runtime_id: '2023.09',
       alert_channel_subscription: alertChannelSubscriptions

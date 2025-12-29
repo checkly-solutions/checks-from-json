@@ -68,17 +68,18 @@ async function main() {
 
     // 3. Create check group for app1
     log('3. Creating check group...');
-    const checkGroup = transformCheckGroup(testApp, 'app1', alertChannels);
+    const tierConfig = testApp.app1[0] || {};
+    const checkGroup = transformCheckGroup(testApp, 'app1', alertChannels, tierConfig);
     checkGroup.hcl = generateHcl(checkGroup);
     success(`Check group created: ${checkGroup.resourceId}`);
 
     // 4. Create browser checks
     log('4. Creating browser checks...');
     const browserChecks = [];
-    for (const tierConfig of testApp.app1) {
-      if (tierConfig.browser_check) {
-        for (const check of tierConfig.browser_check) {
-          const browserCheck = transformBrowserCheck(testApp, 'app1', check, checkGroup);
+    for (const checkCategory of testApp.app1) {
+      if (checkCategory.browser_check) {
+        for (const check of checkCategory.browser_check) {
+          const browserCheck = transformBrowserCheck(testApp, 'app1', check, checkGroup, checkCategory);
           browserCheck.hcl = generateHcl(browserCheck);
           browserChecks.push(browserCheck);
         }
@@ -89,10 +90,10 @@ async function main() {
     // 5. Create multi-step checks
     log('5. Creating multi-step checks...');
     const multiChecks = [];
-    for (const tierConfig of testApp.app1) {
-      if (tierConfig.multi_check) {
-        for (const check of tierConfig.multi_check) {
-          const multiCheck = transformMultiStepCheck(testApp, 'app1', check, checkGroup);
+    for (const checkCategory of testApp.app1) {
+      if (checkCategory.multi_check) {
+        for (const check of checkCategory.multi_check) {
+          const multiCheck = transformMultiStepCheck(testApp, 'app1', check, checkGroup, checkCategory);
           multiCheck.hcl = generateHcl(multiCheck);
           multiChecks.push(multiCheck);
         }

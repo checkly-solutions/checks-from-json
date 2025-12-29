@@ -3,11 +3,12 @@
  * Based on spec section 7.8 and CLI code at createMultiStep.ts
  */
 
-import { AppConfig, MultiStepCheckConfig } from '../types/urlList.types';
+import { AppConfig, MultiStepCheckConfig, TierConfig } from '../types/urlList.types';
 import { TerraformCheck, TerraformCheckGroup } from '../types/terraform.types';
 import { generateResourceId } from '../generators/resource-id-generator';
 import { loadScript } from '../parsers/script-loader';
 import { sanitize } from '../utils/sanitize';
+import { resolveLocations } from '../utils/location-resolver';
 
 /**
  * Transform a multi-step check from JSON to Terraform resource
@@ -30,7 +31,8 @@ export function transformMultiStepCheck(
   app: AppConfig,
   tier: string,
   check: MultiStepCheckConfig,
-  checkGroup: TerraformCheckGroup
+  checkGroup: TerraformCheckGroup,
+  tierConfig: TierConfig
 ): TerraformCheck {
   const appName = app.appName;
   const sanitizedAppName = sanitize(appName);
@@ -53,7 +55,7 @@ export function transformMultiStepCheck(
       frequency: check.frequency,
       group_id: `checkly_check_group.${checkGroup.resourceId}.id`,
       tags: ['MULTI_STEP', sanitizedAppName, tier, 'cli'],
-      locations: ['us-east-1', 'us-west-2'],
+      locations: resolveLocations(check, tierConfig, app, 'multi_step'),
       runtime_id: '2023.09',
       script
     }

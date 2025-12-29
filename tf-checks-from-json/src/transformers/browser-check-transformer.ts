@@ -3,11 +3,12 @@
  * Based on spec section 7.7 and CLI code at createBrowserCheck.ts
  */
 
-import { AppConfig, BrowserCheckConfig } from '../types/urlList.types';
+import { AppConfig, BrowserCheckConfig, TierConfig } from '../types/urlList.types';
 import { TerraformCheck, TerraformCheckGroup } from '../types/terraform.types';
 import { generateResourceId } from '../generators/resource-id-generator';
 import { loadScript } from '../parsers/script-loader';
 import { sanitize } from '../utils/sanitize';
+import { resolveLocations } from '../utils/location-resolver';
 
 /**
  * Transform a browser check from JSON to Terraform resource
@@ -30,7 +31,8 @@ export function transformBrowserCheck(
   app: AppConfig,
   tier: string,
   check: BrowserCheckConfig,
-  checkGroup: TerraformCheckGroup
+  checkGroup: TerraformCheckGroup,
+  tierConfig: TierConfig
 ): TerraformCheck {
   const appName = app.appName;
   const sanitizedAppName = sanitize(appName);
@@ -53,7 +55,7 @@ export function transformBrowserCheck(
       frequency: check.frequency,
       group_id: `checkly_check_group.${checkGroup.resourceId}.id`,
       tags: ['BROWSER', sanitizedAppName, tier, 'cli'],
-      locations: ['us-east-1', 'us-west-2'],
+      locations: resolveLocations(check, tierConfig, app, 'browser'),
       runtime_id: '2023.09',
       script
     }

@@ -48,7 +48,8 @@ async function main() {
     // Generate groups for non-empty tiers only
     for (const tier of ['app1', 'app2', 'app3', 'app4'] as const) {
       if (testApp1[tier].length > 0) {
-        const group = transformCheckGroup(testApp1, tier, alertChannels);
+        const tierConfig = testApp1[tier][0] || {};
+        const group = transformCheckGroup(testApp1, tier, alertChannels, tierConfig);
         group.hcl = generateHcl(group);
         checkGroups.push(group);
       }
@@ -56,7 +57,8 @@ async function main() {
 
     for (const tier of ['app1', 'app2', 'app3', 'app4'] as const) {
       if (testApp2[tier].length > 0) {
-        const group = transformCheckGroup(testApp2, tier, alertChannels);
+        const tierConfig = testApp2[tier][0] || {};
+        const group = transformCheckGroup(testApp2, tier, alertChannels, tierConfig);
         group.hcl = generateHcl(group);
         checkGroups.push(group);
       }

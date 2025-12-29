@@ -3,12 +3,13 @@
  * Based on spec section 7.6 and CLI code at createAPIcheck.ts
  */
 
-import { AppConfig, ApiCheckConfig } from '../types/urlList.types';
+import { AppConfig, ApiCheckConfig, TierConfig } from '../types/urlList.types';
 import { TerraformCheck, TerraformCheckGroup } from '../types/terraform.types';
 import { generateResourceId } from '../generators/resource-id-generator';
 import { parseAssertion } from '../parsers/assertion-parser';
 import { loadScript } from '../parsers/script-loader';
 import { sanitize } from '../utils/sanitize';
+import { resolveLocations } from '../utils/location-resolver';
 
 /**
  * Transform headers array to headers map
@@ -54,7 +55,8 @@ export function transformApiCheck(
   app: AppConfig,
   tier: string,
   check: ApiCheckConfig,
-  checkGroup: TerraformCheckGroup
+  checkGroup: TerraformCheckGroup,
+  tierConfig: TierConfig
 ): TerraformCheck {
   const appName = app.appName;
   const sanitizedAppName = sanitize(appName);
@@ -90,7 +92,7 @@ export function transformApiCheck(
       degraded_response_time: 10000,
       max_response_time: 20000,
       should_fail: check.shouldFail || false,
-      locations: ['us-east-1', 'us-west-2'],
+      locations: resolveLocations(check, tierConfig, app, 'api'),
       request: {
         url: check.url,
         method: check.method,

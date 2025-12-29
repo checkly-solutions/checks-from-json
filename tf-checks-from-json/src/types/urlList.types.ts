@@ -9,10 +9,19 @@
 export type UrlListJson = AppConfig[];
 
 /**
+ * Global configuration for application-wide defaults
+ */
+export interface GlobalConfig {
+  defaultLocations?: string[];   // Default locations for all checks
+  defaultFrequency?: number;      // Default frequency in minutes
+}
+
+/**
  * Application configuration with tiers
  */
 export interface AppConfig {
   appName: string;              // Application name (e.g., "Env-Observability")
+  globalConfig?: GlobalConfig;  // Global defaults for locations and frequency
   app1: TierConfig[];           // Critical tier (highest priority)
   app2: TierConfig[];           // High tier
   app3: TierConfig[];           // Medium tier
@@ -24,9 +33,11 @@ export interface AppConfig {
  * Tier configuration containing check types
  */
 export interface TierConfig {
+  locations?: string[];                    // Tier-level locations for check group
   browser_check?: BrowserCheckConfig[];
   api_check?: ApiCheckConfig[];
   multi_check?: MultiStepCheckConfig[];
+  uptime_check?: UptimeCheckConfig[];     // Uptime monitors
 }
 
 /**
@@ -42,6 +53,7 @@ export interface ApiCheckConfig {
   assertions: string[][];       // Array of assertion code strings
 
   // Optional fields
+  locations?: string[];         // Per-check location override
   setup?: string;               // Path to setup script (relative to src/)
   headers?: Array<{            // HTTP headers
     [key: string]: string;     // e.g., {"X-API-Key": "value"}
@@ -57,6 +69,7 @@ export interface BrowserCheckConfig {
   frequency: number;            // Check frequency in minutes
   activated: boolean;           // Enable/disable check
   urlShort: string;             // Short identifier for check
+  locations?: string[];         // Per-check location override
 }
 
 /**
@@ -67,6 +80,29 @@ export interface MultiStepCheckConfig {
   frequency: number;            // Check frequency in minutes
   activated: boolean;           // Enable/disable check
   urlShort: string;             // Short identifier for check
+  locations?: string[];         // Per-check location override
+}
+
+/**
+ * Uptime Monitor configuration
+ * Maps to checkly_url_monitor Terraform resource
+ */
+export interface UptimeCheckConfig {
+  // Required fields
+  url: string;                      // HTTP/HTTPS endpoint to monitor
+  frequency: number;                // Check frequency in minutes
+  activated: boolean;               // Enable/disable monitor
+  urlShort: string;                 // Short identifier for monitor
+
+  // Optional fields
+  locations?: string[];             // Per-check location override
+  method?: string;                  // HTTP method - NOTE: Not used in Terraform output (checkly_url_monitor doesn't support method)
+  followRedirects?: boolean;        // Follow redirects (default: true)
+  skipSsl?: boolean;                // Skip SSL verification (default: false)
+  shouldFail?: boolean;             // Expect monitor to fail (default: false)
+  assertions?: string[][];          // Limited to statusCode only
+  degradedResponseTime?: number;    // Degraded threshold in ms
+  maxResponseTime?: number;         // Max response time in ms
 }
 
 /**

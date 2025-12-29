@@ -1,8 +1,13 @@
 [
   {
     "appName": "Env-Observability",
+    "globalConfig": {
+      "defaultLocations": ["us-east-1", "eu-west-1"],
+      "defaultFrequency": 5
+    },
     "app1": [
       {
+        "locations": ["us-west-1", "eu-west-1", "ap-south-1"],
         "browser_check": [
           {
             "filePath": "/browser-scripts/visit.spec.ts",
@@ -29,7 +34,17 @@
             "activated": true,
             "urlShort": "service-2"
           }
-        ]
+        ],
+        "uptime_check": [
+          {
+            "url": "https://next-danube-webshop-backend.vercel.app/",
+            "activated": true,
+            "frequency": 5,
+            "setup": "",
+            "assertions": [["statusCode().equals(200)"]],
+            "urlShort": "uptime-mainapp"
+          }
+        ],
       }
     ],
     "app2": [],
@@ -45,7 +60,8 @@
             "filePath": "/browser-scripts/visit.spec.ts",
             "frequency": 5,
             "activated": true,
-            "urlShort": "app-userflow"
+            "urlShort": "app-userflow",
+            "locations": ["us-west-1"]
           }
         ],
         "api_check": [
