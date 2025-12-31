@@ -1,0 +1,107 @@
+[
+  {
+    "appName": "Checkly-Website",
+    "app1": [
+      {
+        "locations": ["us-west-1", "eu-west-1", "ap-south-1"],
+        "uptime_check": [
+          {
+            "url": "https://checklyhq.com",
+            "frequency": 10,
+            "activated": true,
+            "urlShort": "checkly-homepage-uptime",
+            "locations": ["us-east-1", "us-west-2", "eu-east-1", "eu-west-1"],
+            "followRedirects": true,
+            "skipSsl": false,
+            "assertions": [["statusCode().equals(200)"]],
+            "degradedResponseTime": 2000,
+            "maxResponseTime": 5000
+          }
+        ],
+        "api_check": [
+          {
+            "url": "https://www.checklyhq.com/product/uptime-monitoring/",
+            "method": "GET",
+            "frequency": 30,
+            "activated": true,
+            "urlShort": "checkly-uptime-monitoring-api",
+            "locations": ["us-east-1", "eu-west-1"],
+            "assertions": [["statusCode().equals(200)"]]
+          }
+        ],
+        "browser_check": [
+          {
+            "filePath": "/browser-scripts/checkly-pricing.spec.ts",
+            "frequency": 10,
+            "activated": true,
+            "urlShort": "checkly-pricing-page-flow"
+          }
+        ]
+      }
+    ],
+    "app2": [
+      {
+        "uptime_check": [
+          {
+            "url": "https://www.checklyhq.com/docs/",
+            "frequency": 30,
+            "activated": true,
+            "urlShort": "checkly-docs-uptime",
+            "assertions": [["statusCode().equals(200)"]]
+          }
+        ]
+      }
+    ],
+    "app3": [],
+    "app4": []
+  },
+  {
+    "appName": "External Services",
+    "app1": [
+      {
+        "locations": ["us-west-1", "eu-west-1"],
+        "uptime_check": [
+          {
+            "url": "https://google.com",
+            "frequency": 20,
+            "activated": true,
+            "urlShort": "google-uptime-eu",
+            "locations": ["eu-west-1", "eu-central-1", "eu-north-1", "eu-west-1"],
+            "followRedirects": true,
+            "skipSsl": false,
+            "assertions": [["statusCode().equals(200)"]],
+            "degradedResponseTime": 2000,
+            "maxResponseTime": 5000
+          },
+          {
+            "url": "https://google.com",
+            "frequency": 15,
+            "activated": true,
+            "urlShort": "google-uptime-us",
+            "locations": ["us-east-1", "us-west-1"],
+            "followRedirects": true,
+            "skipSsl": false,
+            "assertions": [["statusCode().equals(200)"]],
+            "degradedResponseTime": 2000,
+            "maxResponseTime": 5000
+          },
+          {
+            "url": "https://google.com",
+            "frequency": 10,
+            "activated": true,
+            "urlShort": "google-uptime-ap",
+            "locations": ["ap-northeast-1", "ap-southeast-1", "ap-east-1", "ap-south-1"],
+            "followRedirects": true,
+            "skipSsl": false,
+            "assertions": [["statusCode().equals(200)"]],
+            "degradedResponseTime": 2000,
+            "maxResponseTime": 5000
+          }
+        ]
+      }
+    ],
+    "app2": [],
+    "app3": [],
+    "app4": []
+  }
+]

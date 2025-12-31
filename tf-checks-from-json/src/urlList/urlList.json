@@ -1,10 +1,6 @@
 [
   {
     "appName": "Env-Observability",
-    "globalConfig": {
-      "defaultLocations": ["us-east-1", "eu-west-1"],
-      "defaultFrequency": 5
-    },
     "app1": [
       {
         "locations": ["us-west-1", "eu-west-1", "ap-south-1"],
@@ -42,9 +38,10 @@
             "frequency": 5,
             "setup": "",
             "assertions": [["statusCode().equals(200)"]],
-            "urlShort": "uptime-mainapp"
+            "urlShort": "uptime-mainapp",
+            "locations": ["us-west-1", "eu-west-1", "ap-south-1"]
           }
-        ],
+        ]
       }
     ],
     "app2": [],

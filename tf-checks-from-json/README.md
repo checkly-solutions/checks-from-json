@@ -322,9 +322,6 @@ Override global defaults for a specific tier:
 ```json
 {
   "appName": "Production-API",
-  "globalConfig": {
-    "defaultLocations": ["us-east-1", "eu-west-1"]
-  },
   "app1": [
     {
       "locations": ["us-west-1", "ap-south-1"],
